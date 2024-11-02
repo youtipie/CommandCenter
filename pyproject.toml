@@ -1,12 +1,17 @@
 [tool.poetry]
-name = "commandcenter"
+name = "Drone"
 version = "0.1.0"
 description = ""
 authors = ["Denis Bobela <youtipie@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12.4"
+python = "^3.8"
+dronekit = "^2.9.2"
+dronekit-sitl = "^3.3.0"
+mavproxy = "^1.8.71"
+prompt-toolkit = "^3.0.48"
+wxpython = "^4.2.2"
 
 
 [build-system]

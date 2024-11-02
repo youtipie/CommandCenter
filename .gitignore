@@ -73,3 +73,6 @@ venv.bak/
 dmypy.json
 
 .idea/
+
+# Mavproxy stuff:
+mav.*
