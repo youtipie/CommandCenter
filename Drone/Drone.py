@@ -46,7 +46,6 @@ class Drone:
                 "log": self.vehicle.location.global_frame.lon,
                 "alt": self.vehicle.location.global_frame.alt,
                 "relative_alt": self.vehicle.location.global_relative_frame.alt,
-                "temp": self.vehicle.location.global_relative_frame.lat
             },
             "attitude": {
                 "yaw": self.vehicle.attitude.yaw,
@@ -70,7 +69,7 @@ class Drone:
             },
             "system_status": self.vehicle.system_status.state,
             "heading": self.vehicle.heading,
-            "airspeed": self.vehicle.airspeed,
+            "vertical_speed": -self.vehicle.velocity[-1],
             "groundspeed": self.vehicle.groundspeed,
             **self.__mission_control.get_mission_status()
         }

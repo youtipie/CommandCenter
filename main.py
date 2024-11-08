@@ -1,9 +1,8 @@
 import time
 
-from dronekit import Command
 from pymavlink import mavutil
 
-from Drone import Drone
+from Drone import Drone, create_command
 
 vehicle = Drone('127.0.0.1:14550')
 
@@ -17,15 +16,9 @@ vehicle = Drone('127.0.0.1:14550')
 #     print(response)
 
 commands_list = [
-    Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0,
-            0, 0, 0, 10),
-    Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
-            0, 0, 0, 0, 0,
-            0, -35.362093, 149.164726, 5),
-    Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-            mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0,
-            0, 0, 0,
-            0, 0, 0, 0)
+    create_command(mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, param7=10),
+    create_command(mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, param5=-35.362093, param6=149.164726, param7=5),
+    create_command(mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH)
 ]
 
 vehicle.start_mission(commands_list)

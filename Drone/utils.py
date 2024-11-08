@@ -7,6 +7,7 @@ ALLOWED_COMMANDS = (
     mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
     mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
     mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
+    # TODO: Add more
 )
 
 
@@ -20,3 +21,9 @@ def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) ->
 
 def check_is_drone_command_allowed(command: Command) -> bool:
     return command.command in ALLOWED_COMMANDS
+
+
+def create_command(command: int, param1: float = 0, param2: float = 0, param3: float = 0,
+                   param4: float = 0, param5: float = 0, param6: float = 0, param7: float = 0):
+    return Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, command, 0, 0,
+                   param1, param2, param3, param4, param5, param6, param7)
