@@ -1,11 +1,9 @@
-import math
-import time
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Iterable
 
-from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal, Command
+from dronekit import connect, LocationGlobalRelative, Command, CommandSequence
 
-from Drone.GuidedControl import GuidedControl
-from Drone.MissionControl import MissionControl
+from .GuidedControl import GuidedControl
+from .MissionControl import MissionControl
 
 
 class Drone:
@@ -24,25 +22,16 @@ class Drone:
               groundspeed: Optional[float] = None) -> Iterator[str]:
         return self.__guided_control.go_to(location, airspeed, groundspeed)
 
-    def start_mission(self) -> str:
+    def start_mission(self, commands: Iterable[Command]) -> str:
         for _ in self.take_off(3):
             pass
-        return self.__mission_control.start_mission()
+        return self.__mission_control.start_mission(commands)
 
-    def clear_mission(self) -> None:
-        self.__mission_control.clear_mission()
+    def get_current_mission(self) -> CommandSequence:
+        return self.__mission_control.get_current_mission()
 
-    def add_command(self, command: Command) -> None:
-        self.__mission_control.add_command(command)
-
-    def upload_commands(self) -> None:
-        self.__mission_control.upload_commands()
-
-    def get_mission_progress(self) -> float:
-        return self.__mission_control.get_mission_progress()
-
-    def get_distance_to_next_waypoint(self) -> None:
-        return self.__mission_control.get_distance_to_next_waypoint()
+    def is_mission_finished(self) -> bool:
+        return self.__mission_control.is_mission_finished()
 
     def listen_for_attributes(self, attr_name, cb) -> None:
         self.vehicle.add_attribute_listener(attr_name, cb)
@@ -50,33 +39,40 @@ class Drone:
     def remove_listener(self, attr_name, cb) -> None:
         self.vehicle.remove_attribute_listener(attr_name, cb)
 
-    def get_attributes(self) -> dict:
+    def get_status(self) -> dict:
         return {
             "location": {
                 "lat": self.vehicle.location.global_frame.lat,
                 "log": self.vehicle.location.global_frame.lon,
-                "alt": self.vehicle.location.global_frame.alt
+                "alt": self.vehicle.location.global_frame.alt,
+                "relative_alt": self.vehicle.location.global_relative_frame.alt,
+                "temp": self.vehicle.location.global_relative_frame.lat
             },
             "attitude": {
                 "yaw": self.vehicle.attitude.yaw,
                 "roll": self.vehicle.attitude.roll,
                 "pitch": self.vehicle.attitude.pitch
             },
-            "velocity": self.vehicle.velocity,
-            "gps": self.vehicle.gps_0,
-            "gimbal": self.vehicle.gimbal,
-            "battery": self.vehicle.battery,
-            "rangefinder": self.vehicle.rangefinder.distance,
+            "gps": {
+                "fix_type": self.vehicle.gps_0.fix_type,
+                "satellites_visible": self.vehicle.gps_0.satellites_visible
+            },
+            "battery": {
+                "voltage": self.vehicle.battery.voltage,
+                "level": self.vehicle.battery.level
+            },
             "ekf_ok": self.vehicle.ekf_ok,
             "last_heartbeat": self.vehicle.last_heartbeat,
-            "home_location": self.vehicle.home_location,
+            "home_location": {
+                "lat": self.vehicle.home_location.lat,
+                "log": self.vehicle.home_location.lon,
+                "alt": self.vehicle.home_location.alt
+            },
             "system_status": self.vehicle.system_status.state,
             "heading": self.vehicle.heading,
-            "is_armable": self.vehicle.is_armable,
             "airspeed": self.vehicle.airspeed,
             "groundspeed": self.vehicle.groundspeed,
-            "armed": self.vehicle.armed,
-            "mode": self.vehicle.mode.name
+            **self.__mission_control.get_mission_status()
         }
 
     def disconnect(self) -> None:

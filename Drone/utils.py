@@ -1,17 +1,13 @@
 import math
-from functools import wraps
-from typing import Callable, Iterator
 
-from dronekit import LocationGlobal
+from dronekit import LocationGlobal, Command
+from pymavlink import mavutil
 
-
-# def yield_responses(func: Callable) -> Callable:
-#     @wraps(func)
-#     def wrapper(self, *args, **kwargs) -> Iterator[str]:
-#         for response in func(self, *args, **kwargs):
-#             yield response
-#
-#     return wrapper
+ALLOWED_COMMANDS = (
+    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+    mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
+    mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
+)
 
 
 def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) -> float:
@@ -20,3 +16,7 @@ def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) ->
     plain_distance = math.sqrt((d_lat * d_lat) + (d_long * d_long)) * 1.113195e5
     alt_diff = location2.alt - location1.alt
     return math.sqrt(plain_distance ** 2 + alt_diff ** 2)
+
+
+def check_is_drone_command_allowed(command: Command) -> bool:
+    return command.command in ALLOWED_COMMANDS

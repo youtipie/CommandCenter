@@ -59,3 +59,5 @@ class GuidedControl:
         while 5 < get_distance_metres(self.vehicle.location.global_relative_frame, location):
             time.sleep(1)
         yield "Reached target location"
+
+    # TODO: Add another commands in guided mode control
