@@ -3,7 +3,7 @@ from typing import Iterable
 from dronekit import Vehicle, LocationGlobalRelative, Command, CommandSequence, VehicleMode
 from pymavlink import mavutil
 
-from .utils import get_distance_metres, check_is_drone_command_allowed
+from .utils import get_distance_metres, check_is_drone_command_allowed, create_command
 
 
 class MissionControl:
@@ -34,10 +34,7 @@ class MissionControl:
             self.add_command(command)
 
         # Adding dummy command, so we can track when mission is finished
-        self.add_command(Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-                                 mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0,
-                                 0, 0, 0,
-                                 0, 0, 0, 0))
+        self.add_command(create_command(mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH))
         self.upload_commands()
         self.vehicle.mode = VehicleMode("AUTO")
         return "Started mission"
@@ -57,7 +54,7 @@ class MissionControl:
     def is_mission_finished(self) -> bool:
         return self.get_mission_progress() == 1
 
-    def get_distance_to_next_waypoint(self) -> None:
+    def get_distance_to_next_waypoint(self) -> float:
         next_waypoint = self.vehicle.commands.next
         if next_waypoint == 0:
             return None
@@ -65,15 +62,23 @@ class MissionControl:
         lat = mission_item.x
         lon = mission_item.y
         alt = mission_item.z
+
+        is_exceptional_case = False
         if mission_item.command == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH:
             lat = self.vehicle.home_location.lat
             lon = self.vehicle.home_location.lon
             alt = 0
+            is_exceptional_case = True
 
         # TODO: SOME COMMANDS MAY HAVE 0, 0, 0 AS XYZ. HANDLE IT
         # Temporary fix
-        if (lat, lon, alt) == (0, 0, 0):
-            return 0
+        if not is_exceptional_case:
+            if lat == 0:
+                lat = self.vehicle.location.global_relative_frame.lat
+            if lon == 0:
+                lon = self.vehicle.location.global_relative_frame.lon
+            if alt == 0:
+                alt = self.vehicle.location.global_relative_frame.alt
 
         targetWaypointLocation = LocationGlobalRelative(lat, lon, alt)
         distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, targetWaypointLocation)

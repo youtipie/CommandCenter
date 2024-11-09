@@ -4,16 +4,13 @@ from pymavlink import mavutil
 
 from Drone import Drone, create_command
 
-vehicle = Drone('127.0.0.1:14550')
+vehicle = Drone('tcp:127.0.0.1:5763')
 
-# for response in vehicle.take_off(10):
-#     print(response)
-#
-# for response in vehicle.go_to(LocationGlobalRelative(-35.362093, 149.164726, 5)):
-#     print(response)
-#
-# for response in vehicle.return_to_launch():
-#     print(response)
+# vehicle.take_off(10)
+
+# vehicle.go_to(-35.362093, 149.164726, 5)
+
+# vehicle.return_to_launch()
 
 commands_list = [
     create_command(mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, param7=10),

@@ -12,19 +12,18 @@ class Drone:
         self.__guided_control = GuidedControl(self.vehicle)
         self.__mission_control = MissionControl(self.vehicle)
 
-    def take_off(self, alt: float = 100) -> Iterator[str]:
-        return self.__guided_control.take_off(alt)
+    def take_off(self, alt: float = 100, wait_for: bool = False) -> Iterator[str]:
+        return self.__guided_control.take_off(alt, wait_for)
 
-    def return_to_launch(self) -> Iterator[str]:
-        return self.__guided_control.return_to_launch()
+    def return_to_launch(self, wait_for: bool = False) -> Iterator[str]:
+        return self.__guided_control.return_to_launch(wait_for)
 
-    def go_to(self, location: LocationGlobalRelative, airspeed: Optional[float] = None,
-              groundspeed: Optional[float] = None) -> Iterator[str]:
-        return self.__guided_control.go_to(location, airspeed, groundspeed)
+    def go_to(self, lat: float, lon: float, alt: float, airspeed: Optional[float] = None,
+              groundspeed: Optional[float] = None, wait_for: bool = False) -> Iterator[str]:
+        return self.__guided_control.go_to(LocationGlobalRelative(lat, lon, alt), airspeed, groundspeed, wait_for)
 
     def start_mission(self, commands: Iterable[Command]) -> str:
-        for _ in self.take_off(3):
-            pass
+        self.take_off(3)
         return self.__mission_control.start_mission(commands)
 
     def get_current_mission(self) -> CommandSequence:
@@ -71,7 +70,8 @@ class Drone:
             "heading": self.vehicle.heading,
             "vertical_speed": -self.vehicle.velocity[-1],
             "groundspeed": self.vehicle.groundspeed,
-            **self.__mission_control.get_mission_status()
+            **self.__mission_control.get_mission_status(),
+            **self.__guided_control.get_guided_status()
         }
 
     def disconnect(self) -> None:

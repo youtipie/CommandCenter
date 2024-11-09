@@ -1,6 +1,6 @@
 import math
 
-from dronekit import LocationGlobal, Command
+from dronekit import LocationGlobal, Command, LocationGlobalRelative
 from pymavlink import mavutil
 
 ALLOWED_COMMANDS = (
@@ -24,6 +24,6 @@ def check_is_drone_command_allowed(command: Command) -> bool:
 
 
 def create_command(command: int, param1: float = 0, param2: float = 0, param3: float = 0,
-                   param4: float = 0, param5: float = 0, param6: float = 0, param7: float = 0):
+                   param4: float = 0, param5: float = 0, param6: float = 0, param7: float = 0) -> Command:
     return Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, command, 0, 0,
                    param1, param2, param3, param4, param5, param6, param7)
