@@ -9,7 +9,7 @@ from Drone.utils import get_distance_metres
 class GuidedControl:
     def __init__(self, vehicle: Vehicle):
         self.vehicle = vehicle
-        self.next_waypoint: Optional[LocationGlobalRelative] = None
+        self.__next_waypoint: Optional[LocationGlobalRelative] = None
 
     def __arm_if_not_armed(self) -> None:
         if self.vehicle.armed and self.vehicle.mode.name == "GUIDED":
@@ -28,9 +28,9 @@ class GuidedControl:
         except TimeoutError as e:
             print(e)
 
-    def take_off(self, alt: float = 100, wait_for: bool = False):
+    def take_off(self, alt: float = 100, wait_for: bool = False) -> None:
         self.__arm_if_not_armed()
-        self.next_waypoint = LocationGlobalRelative(
+        self.__next_waypoint = LocationGlobalRelative(
             self.vehicle.home_location.lat, self.vehicle.home_location.lon, alt
         )
         self.vehicle.simple_takeoff(alt)
@@ -43,7 +43,7 @@ class GuidedControl:
     def return_to_launch(self, wait_for: bool = False) -> None:
         try:
             self.vehicle.mode = VehicleMode("RTL")
-            self.next_waypoint = LocationGlobalRelative(
+            self.__next_waypoint = LocationGlobalRelative(
                 self.vehicle.home_location.lat, self.vehicle.home_location.lot, 0
             )
             if wait_for:
@@ -55,21 +55,21 @@ class GuidedControl:
     def go_to(self, location: LocationGlobalRelative, airspeed: Optional[float] = None,
               groundspeed: Optional[float] = None, wait_for: bool = False) -> None:
         self.__arm_if_not_armed()
-        self.next_waypoint = location
+        self.__next_waypoint = location
         self.vehicle.simple_goto(location, airspeed, groundspeed)
         if wait_for:
             while 5 < get_distance_metres(self.vehicle.location.global_relative_frame, location):
                 time.sleep(1)
 
-    def get_distance_to_next_waypoint(self) -> float:
-        if not self.next_waypoint:
+    def __get_distance_to_next_waypoint(self) -> float:
+        if not self.__next_waypoint:
             return 0
 
-        distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, self.next_waypoint)
+        distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, self.__next_waypoint)
         return distance_to_point
 
     def get_guided_status(self) -> dict:
-        distance_to_next_waypoint = self.get_distance_to_next_waypoint()
+        distance_to_next_waypoint = self.__get_distance_to_next_waypoint()
         return {
             "distance_to_guided_waypoint": distance_to_next_waypoint
         } if distance_to_next_waypoint else {}

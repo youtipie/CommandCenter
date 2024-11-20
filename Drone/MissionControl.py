@@ -9,40 +9,40 @@ from .utils import get_distance_metres, check_is_drone_command_allowed, create_c
 class MissionControl:
     def __init__(self, vehicle: Vehicle):
         self.vehicle = vehicle
-        self.download_mission()
+        self.__download_mission()
 
-    def download_mission(self):
+    def __download_mission(self) -> None:
         cmds = self.vehicle.commands
         cmds.download()
         cmds.wait_ready()
 
-    def clear_mission(self) -> None:
+    def __clear_mission(self) -> None:
         self.vehicle.commands.clear()
-        self.upload_commands()
+        self.__upload_commands()
 
-    def add_command(self, command: Command) -> None:
+    def __add_command(self, command: Command) -> None:
         if not check_is_drone_command_allowed(command):
             raise ValueError("Command not allowed.")
         self.vehicle.commands.add(command)
 
-    def upload_commands(self) -> None:
+    def __upload_commands(self) -> None:
         self.vehicle.commands.upload()
 
     def start_mission(self, commands: Iterable[Command]) -> str:
-        self.clear_mission()
+        self.__clear_mission()
         for command in commands:
-            self.add_command(command)
+            self.__add_command(command)
 
         # Adding dummy command, so we can track when mission is finished
-        self.add_command(create_command(mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH))
-        self.upload_commands()
+        self.__add_command(create_command(mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH))
+        self.__upload_commands()
         self.vehicle.mode = VehicleMode("AUTO")
         return "Started mission"
 
     def get_current_mission(self) -> CommandSequence:
         return self.vehicle.commands
 
-    def get_mission_progress(self) -> float:
+    def __get_mission_progress(self) -> float:
         num_waypoints = len(self.vehicle.commands)
         if num_waypoints == 0:
             return 1
@@ -52,9 +52,9 @@ class MissionControl:
         return current_waypoint / num_waypoints
 
     def is_mission_finished(self) -> bool:
-        return self.get_mission_progress() == 1
+        return self.__get_mission_progress() == 1
 
-    def get_distance_to_next_waypoint(self) -> float:
+    def __get_distance_to_next_waypoint(self) -> float:
         next_waypoint = self.vehicle.commands.next
         if next_waypoint == 0:
             return None
@@ -84,12 +84,12 @@ class MissionControl:
         distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, targetWaypointLocation)
         return distance_to_point
 
-    def get_mission_status(self):
+    def get_mission_status(self) -> dict:
         return {
             "have_mission": len(self.vehicle.commands) > 0,
-            "mission_progress": self.get_mission_progress(),
+            "mission_progress": self.__get_mission_progress(),
             "is_mission_finished": self.is_mission_finished(),
-            "distance_to_next_waypoint": self.get_distance_to_next_waypoint(),
+            "distance_to_next_waypoint": self.__get_distance_to_next_waypoint(),
             "current_waypoint": self.vehicle.commands.next,
             "waypoints": [{
                 **dict((name, getattr(command, name)) for name in command.fieldnames)

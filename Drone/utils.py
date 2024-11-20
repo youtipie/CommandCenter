@@ -3,12 +3,7 @@ import math
 from dronekit import LocationGlobal, Command, LocationGlobalRelative
 from pymavlink import mavutil
 
-ALLOWED_COMMANDS = (
-    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
-    mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,
-    mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
-    # TODO: Add more
-)
+from Drone.allowed_commands import ALLOWED_COMMANDS
 
 
 def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) -> float:

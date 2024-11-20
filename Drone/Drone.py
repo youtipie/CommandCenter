@@ -1,4 +1,4 @@
-from typing import Iterator, Optional, Iterable
+from typing import Optional, Iterable
 
 from dronekit import connect, LocationGlobalRelative, Command, CommandSequence
 
@@ -12,14 +12,14 @@ class Drone:
         self.__guided_control = GuidedControl(self.vehicle)
         self.__mission_control = MissionControl(self.vehicle)
 
-    def take_off(self, alt: float = 100, wait_for: bool = False) -> Iterator[str]:
+    def take_off(self, alt: float = 100, wait_for: bool = False) -> None:
         return self.__guided_control.take_off(alt, wait_for)
 
-    def return_to_launch(self, wait_for: bool = False) -> Iterator[str]:
+    def return_to_launch(self, wait_for: bool = False) -> None:
         return self.__guided_control.return_to_launch(wait_for)
 
     def go_to(self, lat: float, lon: float, alt: float, airspeed: Optional[float] = None,
-              groundspeed: Optional[float] = None, wait_for: bool = False) -> Iterator[str]:
+              groundspeed: Optional[float] = None, wait_for: bool = False) -> None:
         return self.__guided_control.go_to(LocationGlobalRelative(lat, lon, alt), airspeed, groundspeed, wait_for)
 
     def start_mission(self, commands: Iterable[Command]) -> str:
