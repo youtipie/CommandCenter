@@ -2,7 +2,7 @@
 
 ### Description
 
-This is backend part of mobile app called **Command Center**. It uses dronekit to communicate with drone.
+This is both backend and frontend part of mobile app called **Command Center**.
 
 ### Usage
 
