@@ -1,9 +1,19 @@
 import math
-
-from dronekit import LocationGlobal, Command, LocationGlobalRelative
+import time
+from functools import wraps
+from dronekit import LocationGlobal, Command
 from pymavlink import mavutil
 
 from Drone.allowed_commands import ALLOWED_COMMANDS
+
+
+def update_last_used(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        self.last_used = time.time()
+        return func(self, *args, **kwargs)
+
+    return wrapper
 
 
 def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) -> float:

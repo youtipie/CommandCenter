@@ -39,9 +39,6 @@ class MissionControl:
         self.vehicle.mode = VehicleMode("AUTO")
         return "Started mission"
 
-    def get_current_mission(self) -> CommandSequence:
-        return self.vehicle.commands
-
     def __get_mission_progress(self) -> float:
         num_waypoints = len(self.vehicle.commands)
         if num_waypoints == 0:
@@ -51,7 +48,7 @@ class MissionControl:
             return 1
         return current_waypoint / num_waypoints
 
-    def is_mission_finished(self) -> bool:
+    def __is_mission_finished(self) -> bool:
         return self.__get_mission_progress() == 1
 
     def __get_distance_to_next_waypoint(self) -> float:
@@ -88,7 +85,7 @@ class MissionControl:
         return {
             "have_mission": len(self.vehicle.commands) > 0,
             "mission_progress": self.__get_mission_progress(),
-            "is_mission_finished": self.is_mission_finished(),
+            "is_mission_finished": self.__is_mission_finished(),
             "distance_to_next_waypoint": self.__get_distance_to_next_waypoint(),
             "current_waypoint": self.vehicle.commands.next,
             "waypoints": [{

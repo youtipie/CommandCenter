@@ -1,9 +1,11 @@
+import time
 from typing import Optional, Iterable
 
 from dronekit import connect, LocationGlobalRelative, Command, CommandSequence
 
 from .GuidedControl import GuidedControl
 from .MissionControl import MissionControl
+from .utils import update_last_used
 
 
 class Drone:
@@ -11,33 +13,30 @@ class Drone:
         self.vehicle = connect(connection_string, heartbeat_timeout=15, wait_ready=True)
         self.__guided_control = GuidedControl(self.vehicle)
         self.__mission_control = MissionControl(self.vehicle)
+        self.last_used = time.time()
 
+    def is_inactive(self, timeout: int) -> bool:
+        return (time.time() - self.last_used) > timeout
+
+    @update_last_used
     def take_off(self, alt: float = 100, wait_for: bool = False) -> None:
         return self.__guided_control.take_off(alt, wait_for)
 
+    @update_last_used
     def return_to_launch(self, wait_for: bool = False) -> None:
         return self.__guided_control.return_to_launch(wait_for)
 
+    @update_last_used
     def go_to(self, lat: float, lon: float, alt: float, airspeed: Optional[float] = None,
               groundspeed: Optional[float] = None, wait_for: bool = False) -> None:
         return self.__guided_control.go_to(LocationGlobalRelative(lat, lon, alt), airspeed, groundspeed, wait_for)
 
+    @update_last_used
     def start_mission(self, commands: Iterable[Command]) -> str:
         self.take_off(3)
         return self.__mission_control.start_mission(commands)
 
-    def get_current_mission(self) -> CommandSequence:
-        return self.__mission_control.get_current_mission()
-
-    def is_mission_finished(self) -> bool:
-        return self.__mission_control.is_mission_finished()
-
-    def listen_for_attributes(self, attr_name, cb) -> None:
-        self.vehicle.add_attribute_listener(attr_name, cb)
-
-    def remove_listener(self, attr_name, cb) -> None:
-        self.vehicle.remove_attribute_listener(attr_name, cb)
-
+    @update_last_used
     def get_status(self) -> dict:
         return {
             "location": {

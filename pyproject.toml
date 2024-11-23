@@ -12,6 +12,11 @@ dronekit-sitl = "^3.3.0"
 mavproxy = "^1.8.71"
 prompt-toolkit = "^3.0.48"
 wxpython = "^4.2.2"
+python-dotenv = "^1.0.1"
+flask = "3.0"
+gunicorn = "^23.0.0"
+eventlet = "^0.38.0"
+flask-socketio = "^5.4.1"
 
 
 [build-system]
