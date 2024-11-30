@@ -3,6 +3,8 @@ from pymavlink import mavutil
 from functools import wraps
 from typing import Tuple, Dict, List
 
+from Drone import ALLOWED_COMMANDS
+
 
 def validate_user_data(data, required_fields: Dict[str, type]) -> Tuple[Dict[str, str], int]:
     if not data:
@@ -47,6 +49,8 @@ def validate_cmd_list(cmd_list) -> Tuple[bool, List[str]]:
             continue
         if not isinstance(item["command"], int):
             errors.append(f"Item at index {idx} has 'command' that is not an integer: {item['command']}.")
+        if item["command"] not in ALLOWED_COMMANDS:
+            errors.append(f"Item at index {idx} has command that is not allowed: {item['command']}.")
 
         for param in [f"param{i}" for i in range(1, 8)]:
             if param in item and not isinstance(item[param], (float, int)):
@@ -54,7 +58,8 @@ def validate_cmd_list(cmd_list) -> Tuple[bool, List[str]]:
 
     if not (isinstance(cmd_list[0], dict) and cmd_list[0].get("command") == mavutil.mavlink.MAV_CMD_NAV_TAKEOFF):
         errors.append("Command list must start with NAV_TAKEOFF command.")
-    if not (isinstance(cmd_list[-1], dict) and cmd_list[-1].get("command") == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH):
+    if not (isinstance(cmd_list[-1], dict) and cmd_list[-1].get(
+            "command") == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH):
         errors.append("Command list must end with NAV_RTL command.")
 
     is_valid = len(errors) == 0
