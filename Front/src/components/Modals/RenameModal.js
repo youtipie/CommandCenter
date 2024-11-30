@@ -1,9 +1,9 @@
 import {View, StyleSheet, Text, TextInput} from "react-native";
 import Modal from "./Modal";
-import {colors, fonts} from "../constants/styles";
+import {colors, fonts} from "../../constants/styles";
 import {useModal} from "./ModalProvider";
 import {useState} from "react";
-import {horizontalScale, moderateScale} from "../utils/metrics";
+import {horizontalScale, moderateScale} from "../../utils/metrics";
 
 const RenameModal = ({onRename}) => {
     const {closeModal} = useModal();

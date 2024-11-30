@@ -1,11 +1,12 @@
 import {useState} from "react";
 import {colors, commonIcons, fonts, missionPopUpIcons} from "../constants/styles";
-import {useModal} from "../components/ModalProvider";
+import {useModal} from "../components/Modals/ModalProvider";
 import {FlatList, Text, View, StyleSheet} from "react-native";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
-import Modal from "../components/Modal";
-import RenameModal from "../components/RenameModal";
+import Modal from "../components/Modals/Modal";
+import RenameModal from "../components/Modals/RenameModal";
+import SelectModal from "../components/Modals/SelectModal";
 
 const Missions = () => {
     const {openModal, closeModal} = useModal();
@@ -28,7 +29,26 @@ const Missions = () => {
     ]);
 
     const startMission = (missionId) => {
-        console.log("startMission", missionId);
+        // Fetch later
+        const options = [
+            {
+                id: 10,
+                label: "Mavick 14"
+            },
+            {
+                id: 11,
+                label: "Mavick 15"
+            }
+        ];
+        openModal(() => (
+            <SelectModal
+                title="Select drone"
+                options={options}
+                onSelect={(drone) => (
+                    console.log("startMission", missionId, drone.id)
+                )}
+            />
+        ));
     }
 
     const editMission = (missionId) => {

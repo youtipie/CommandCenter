@@ -2,7 +2,7 @@ import * as SplashScreen from "expo-splash-screen";
 import {useCallback} from "react";
 import {StatusBar} from 'expo-status-bar';
 import {View} from 'react-native';
-import Navigation from "./src/components/navigation/Navigation";
+import Navigation from "./src/components/Navigation/Navigation";
 import {useFonts} from "expo-font";
 import {fonts} from "./src/constants/styles"
 

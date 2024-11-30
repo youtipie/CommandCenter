@@ -1,12 +1,14 @@
 import {View, StyleSheet, FlatList, Text} from "react-native";
-import {colors, dronePopUpIcons, fonts} from "../constants/styles";
+import {colors, commonIcons, dronePopUpIcons, fonts} from "../constants/styles";
 import {faPlane, faPlaneCircleCheck, faPlaneCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
-import {useModal} from "../components/ModalProvider";
+import {useModal} from "../components/Modals/ModalProvider";
 import {useState} from "react";
-import Modal from "../components/Modal";
-import RenameModal from "../components/RenameModal";
+import Modal from "../components/Modals/Modal";
+import RenameModal from "../components/Modals/RenameModal";
+import SelectModal from "../components/Modals/SelectModal";
+import SelectField from "../components/SelectField";
 
 const statuses = {
     1: {description: "Mission in progress", icon: faPlane, color: colors.success100},
@@ -36,7 +38,26 @@ const Drones = () => {
     ]);
 
     const startMission = (droneId) => {
-        console.log("startMission", droneId);
+        // Fetch later
+        const options = [
+            {
+                id: 10,
+                label: "Mission 1"
+            },
+            {
+                id: 11,
+                label: "Very long mission name so it wont fit, right?"
+            }
+        ];
+        openModal(() => (
+            <SelectModal
+                title="Select mission"
+                options={options}
+                onSelect={(mission) => (
+                    console.log("startMission", droneId, mission.id)
+                )}
+            />
+        ));
     }
 
     const observeDrone = (droneId) => {

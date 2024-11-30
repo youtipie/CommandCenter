@@ -1,8 +1,8 @@
 import {Text, View, StyleSheet, TouchableWithoutFeedback} from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {colors, commonIcons, fonts} from "../constants/styles";
-import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
-import ActionButton from "./ActionButton";
+import {colors, commonIcons, fonts} from "../../constants/styles";
+import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
+import ActionButton from "../ActionButton";
 
 const Modal = ({title, content, buttonColor, buttonText, onPress}) => {
     return (

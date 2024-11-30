@@ -11,7 +11,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {TouchableOpacity, View} from "react-native";
 import About from "../../screens/About";
 import {MenuProvider} from "react-native-popup-menu";
-import ModalProvider from "../ModalProvider";
+import ModalProvider from "../Modals/ModalProvider";
 import Missions from "../../screens/Missions";
 import AddDrone from "../../screens/AddDrone";
 
@@ -118,8 +118,8 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            <ModalProvider>
-                <MenuProvider>
+            <MenuProvider>
+                <ModalProvider>
                     <View style={{
                         position: 'absolute',
                         height: '100%',
@@ -138,8 +138,8 @@ const Navigation = () => {
                             />
                         ))}
                     </Stack.Navigator>
-                </MenuProvider>
-            </ModalProvider>
+                </ModalProvider>
+            </MenuProvider>
         </NavigationContainer>
     );
 };
