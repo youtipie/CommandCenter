@@ -1,6 +1,6 @@
 import {createStackNavigator} from "@react-navigation/stack";
 import {createDrawerNavigator} from "@react-navigation/drawer";
-import {NavigationContainer} from "@react-navigation/native";
+import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import Drones from "../../screens/Drones";
 import {commonIcons, drawerIcons, headerStyle} from "../../constants/styles";
 import {horizontalScale, moderateScale} from "../../utils/metrics";
@@ -8,21 +8,24 @@ import {colors, fonts} from "../../constants/styles";
 import DrawerIcon from "./DrawerIcon";
 import DrawerCustomContent from "./DrawerContent";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {TouchableOpacity} from "react-native";
+import {TouchableOpacity, View} from "react-native";
 import About from "../../screens/About";
 import {MenuProvider} from "react-native-popup-menu";
 import ModalProvider from "../ModalProvider";
 import Missions from "../../screens/Missions";
+import AddDrone from "../../screens/AddDrone";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
+    const navigation = useNavigation();
+
     const drawerScreens = [
         {
             name: 'Drones', title: "My Drones", options: {
                 headerRight: ({tintColor}) => (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("AddDrone")}>
                         <FontAwesomeIcon
                             icon={commonIcons.addCircle}
                             color={tintColor}
@@ -106,20 +109,26 @@ const DrawerNavigation = () => {
 const Navigation = () => {
     const stackScreens = [
         {name: 'Drawer', options: {headerShown: false}, component: DrawerNavigation},
+        {name: 'AddDrone', options: {title: "Add Drone"}, component: AddDrone},
         // {name: 'Details', options: {title: "Details"}, component: null},
-        // {name: 'AddDrone', options: {title: "Add Drone"}, component: null},
         // {name: 'MissionHistory', options: {}, component: null},
         // {name: 'GuidedControl', options: {}, component: null},
         // {name: 'MissionControl', options: {}, component: null},
     ];
 
     return (
-        <NavigationContainer
-            screenOptions={headerStyle}
-        >
+        <NavigationContainer>
             <ModalProvider>
                 <MenuProvider>
-                    <Stack.Navigator>
+                    <View style={{
+                        position: 'absolute',
+                        height: '100%',
+                        width: '100%',
+                        backgroundColor: colors.primary200
+                    }}/>
+                    <Stack.Navigator
+                        screenOptions={headerStyle}
+                    >
                         {stackScreens.map((screen, index) => (
                             <Stack.Screen
                                 key={index}
