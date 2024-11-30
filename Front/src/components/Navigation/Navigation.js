@@ -11,15 +11,17 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {TouchableOpacity, View} from "react-native";
 import About from "../../screens/About";
 import {MenuProvider} from "react-native-popup-menu";
-import ModalProvider from "../Modals/ModalProvider";
+import ModalProvider, {useModal} from "../Modals/ModalProvider";
 import Missions from "../../screens/Missions";
 import AddDrone from "../../screens/AddDrone";
+import RenameModal from "../Modals/RenameModal";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
     const navigation = useNavigation();
+    const {openModal} = useModal();
 
     const drawerScreens = [
         {
@@ -41,7 +43,16 @@ const DrawerNavigation = () => {
         {
             name: 'Missions', title: "My Missions", options: {
                 headerRight: ({tintColor}) => (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => (
+                        openModal(() => (
+                            // Add mission to db later...
+                            <RenameModal
+                                onRename={(text) => (
+                                    console.log("New mission", text)
+                                )}
+                            />
+                        ))
+                    )}>
                         <FontAwesomeIcon
                             icon={commonIcons.addCircle}
                             color={tintColor}
