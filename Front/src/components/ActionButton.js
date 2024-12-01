@@ -2,9 +2,9 @@ import {Text, TouchableOpacity, StyleSheet} from "react-native";
 import {moderateScale} from "../utils/metrics";
 import {colors, fonts} from "../constants/styles";
 
-const ActionButton = ({color, text, onPress}) => {
+const ActionButton = ({color, text, wrapperStyle, onPress}) => {
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.button, {backgroundColor: color}]}>
+        <TouchableOpacity onPress={onPress} style={[styles.button, {backgroundColor: color}, wrapperStyle]}>
             <Text style={styles.text}>
                 {text}
             </Text>

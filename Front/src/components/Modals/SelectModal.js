@@ -2,12 +2,10 @@ import Modal from "./Modal";
 import {StyleSheet, Text, View} from "react-native";
 import {colors, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
-import {useModal} from "./ModalProvider";
 import {useState} from "react";
 import SelectField from "../SelectField";
 
 const SelectModal = ({title, onSelect, options}) => {
-    const {closeModal} = useModal();
     const [error, setError] = useState(null);
     const [selected, setSelected] = useState(null);
 
@@ -18,7 +16,6 @@ const SelectModal = ({title, onSelect, options}) => {
         }
 
         onSelect(selected);
-        closeModal();
     }
 
     return (

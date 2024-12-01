@@ -7,6 +7,7 @@ import {moderateScale} from "../utils/metrics";
 import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
+import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 
 const Missions = () => {
     const {openModal, closeModal} = useModal();
@@ -44,9 +45,14 @@ const Missions = () => {
             <SelectModal
                 title="Select drone"
                 options={options}
-                onSelect={(drone) => (
-                    console.log("startMission", missionId, drone.id)
-                )}
+                onSelect={(drone) => {
+                    closeModal();
+                    openModal(() => (
+                        <PreflightCheckModal
+                            onStartMission={() => console.log(`Started mission${missionId} for drone${drone.id}`)}
+                        />
+                    ));
+                }}
             />
         ));
     }

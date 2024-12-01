@@ -1,5 +1,5 @@
 import {View, StyleSheet, FlatList, Text} from "react-native";
-import {colors, commonIcons, dronePopUpIcons, fonts} from "../constants/styles";
+import {colors, dronePopUpIcons, fonts} from "../constants/styles";
 import {faPlane, faPlaneCircleCheck, faPlaneCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
@@ -8,7 +8,7 @@ import {useState} from "react";
 import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
-import SelectField from "../components/SelectField";
+import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 
 const statuses = {
     1: {description: "Mission in progress", icon: faPlane, color: colors.success100},
@@ -53,9 +53,14 @@ const Drones = () => {
             <SelectModal
                 title="Select mission"
                 options={options}
-                onSelect={(mission) => (
-                    console.log("startMission", droneId, mission.id)
-                )}
+                onSelect={(mission) => {
+                    closeModal();
+                    openModal(() => (
+                        <PreflightCheckModal
+                            onStartMission={() => console.log(`Started mission${mission.id} for drone${droneId}`)}
+                        />
+                    ));
+                }}
             />
         ));
     }
