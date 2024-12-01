@@ -1,6 +1,6 @@
-import {ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet} from "react-native";
 import {colors, commonIcons, missionPopUpIcons} from "../../constants/styles";
-import {horizontalScale, moderateScale} from "../../utils/metrics";
+import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import {statuses} from "../../constants/statuses";
 import Section from "./components/Section";
 import SectionText from "./components/SectionText";
@@ -13,6 +13,9 @@ import {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import PopUpMenu from "../../components/PopUpMenu";
 import dronePopUpOptions from "../../constants/dronePopUpOptions";
+import MapView, {Marker} from "react-native-maps";
+
+const droneImg = require("../../../assets/drone-big.png");
 
 const Details = ({route, navigation}) => {
     const {openModal, closeModal} = useModal();
@@ -21,8 +24,8 @@ const Details = ({route, navigation}) => {
     const droneId = route.params?.droneId;
 
     const mockDroneData = {
-        lat: -53.1451,
-        lon: 10.4141,
+        lat: 50.45466,
+        lon: 30.5238,
         alt: 50,
         groundSpeed: 20,
         airSpeed: 0,
@@ -113,6 +116,27 @@ const Details = ({route, navigation}) => {
     return (
         <ScrollView contentContainerStyle={styles.root}>
             <Section title="Current Position">
+                <MapView
+                    style={styles.map}
+                    zoomEnabled={false}
+                    rotateEnabled={false}
+                    scrollEnabled={false}
+                    initialRegion={{
+                        latitude: mockDroneData.lat,
+                        longitude: mockDroneData.lon,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                >
+                    <Marker
+                        coordinate={{
+                            latitude: mockDroneData.lat,
+                            longitude: mockDroneData.lon,
+                        }}
+                        anchor={{x: 0.5, y: 0.5}}
+                        image={droneImg}
+                    />
+                </MapView>
                 <SectionText>Latitude: {mockDroneData.lat};</SectionText>
                 <SectionText>Longitude: {mockDroneData.lon};</SectionText>
                 <SectionText>Altitude: {mockDroneData.alt} m;</SectionText>
@@ -162,5 +186,9 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: colors.primary200,
         padding: moderateScale(20),
+    },
+    map: {
+        width: "100%",
+        height: verticalScale(250)
     }
 });
