@@ -1,6 +1,5 @@
 import {View, StyleSheet, FlatList, Text} from "react-native";
 import {colors, dronePopUpIcons, fonts} from "../constants/styles";
-import {faPlane, faPlaneCircleCheck, faPlaneCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
 import {useModal} from "../components/Modals/ModalProvider";
@@ -9,15 +8,14 @@ import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
 import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
+import {useNavigation} from "@react-navigation/native";
+import {statuses} from "../constants/statuses";
+import dronePopUpOptions from "../constants/dronePopUpOptions";
 
-const statuses = {
-    1: {description: "Mission in progress", icon: faPlane, color: colors.success100},
-    2: {description: "Waiting for orders", icon: faPlaneCircleCheck, color: colors.success100},
-    3: {description: "Offline", icon: faPlaneCircleXmark, color: colors.error200},
-};
 
 const Drones = () => {
     const {openModal, closeModal} = useModal();
+    const navigation = useNavigation();
 
     const [drones, setDrones] = useState([
         {
@@ -37,86 +35,8 @@ const Drones = () => {
         }
     ]);
 
-    const startMission = (droneId) => {
-        // Fetch later
-        const options = [
-            {
-                id: 10,
-                label: "Mission 1"
-            },
-            {
-                id: 11,
-                label: "Very long mission name so it wont fit, right?"
-            }
-        ];
-        openModal(() => (
-            <SelectModal
-                title="Select mission"
-                options={options}
-                onSelect={(mission) => {
-                    closeModal();
-                    openModal(() => (
-                        <PreflightCheckModal
-                            onStartMission={() => console.log(`Started mission${mission.id} for drone${droneId}`)}
-                        />
-                    ));
-                }}
-            />
-        ));
-    }
-
-    const observeDrone = (droneId) => {
-        console.log("observe", droneId);
-    }
-
-    const RTL = (droneId) => {
-        openModal(() => (
-                <Modal
-                    title="Confirm action"
-                    content="Drone wont be able to continue it's mission."
-                    buttonText="Confirm"
-                    buttonColor={colors.error300}
-                    onPress={
-                        () => {
-                            console.log("RTL", droneId);
-                            closeModal();
-                        }
-                    }
-                />
-            )
-        );
-    }
-
-    const guidedControl = (droneId) => {
-        console.log("guidedControl", droneId);
-    }
-
-    const renameDrone = (droneId) => {
-        openModal(() => (
-            <RenameModal
-                onRename={(text) => (
-                    console.log("rename", droneId, text)
-                )}
-            />
-        ));
-    }
-
-    const deleteDrone = (droneId) => {
-        openModal(() => (
-                <Modal
-                    title="Confirm action"
-                    content="This action cannot be undone!"
-                    buttonText="Confirm"
-                    buttonColor={colors.error300}
-                    onPress={
-                        () => {
-                            setDrones(drones.filter(drone => drone.id !== droneId));
-                            closeModal();
-                        }
-                    }
-                />
-            )
-        );
+    const onDeletion = (droneId) => {
+        setDrones(drones.filter(drone => drone.id !== droneId));
     }
 
     return (
@@ -133,38 +53,8 @@ const Drones = () => {
                 renderItem={(itemData) => (
                     <Card
                         item={itemData.item}
-                        popUpOptions={[
-                            {
-                                label: "Start Mission",
-                                icon: dronePopUpIcons.startMission,
-                                onSelect: () => startMission(itemData.item.id)
-                            },
-                            {
-                                label: "Observe",
-                                icon: dronePopUpIcons.observeDrone,
-                                onSelect: () => observeDrone(itemData.item.id)
-                            },
-                            {
-                                label: "RTL",
-                                icon: dronePopUpIcons.RTL,
-                                onSelect: () => RTL(itemData.item.id)
-                            },
-                            {
-                                label: "Guided Control",
-                                icon: dronePopUpIcons.guidedControl,
-                                onSelect: () => guidedControl(itemData.item.id)
-                            },
-                            {
-                                label: "Rename",
-                                icon: dronePopUpIcons.renameDrone,
-                                onSelect: () => renameDrone(itemData.item.id)
-                            },
-                            {
-                                label: "Delete",
-                                icon: dronePopUpIcons.deleteDrone,
-                                onSelect: () => deleteDrone(itemData.item.id)
-                            }
-                        ]}
+                        onPress={() => navigation.navigate("Details", {droneId: itemData.item.id})}
+                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, onDeletion)}
                     />
                 )}
                 style={{width: "100%"}}

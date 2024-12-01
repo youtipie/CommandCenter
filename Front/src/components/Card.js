@@ -1,12 +1,12 @@
-import {View, StyleSheet, Text} from "react-native";
+import {View, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {colors, commonIcons, fonts} from "../constants/styles";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {moderateScale} from "../utils/metrics";
 import PopUpMenu from "./PopUpMenu";
 
-const Card = ({item, popUpOptions}) => {
+const Card = ({item, onPress, popUpOptions}) => {
     return (
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={onPress}>
             <View style={styles.iconContainer}>
                 <FontAwesomeIcon icon={item.icon} color={item.color} size={moderateScale(64)}/>
             </View>
@@ -23,7 +23,7 @@ const Card = ({item, popUpOptions}) => {
                 </View>
                 <Text style={styles.description}>Status: {item.description}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 
