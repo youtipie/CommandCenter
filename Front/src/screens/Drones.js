@@ -1,13 +1,9 @@
 import {View, StyleSheet, FlatList, Text} from "react-native";
-import {colors, dronePopUpIcons, fonts} from "../constants/styles";
+import {colors, fonts} from "../constants/styles";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
 import {useModal} from "../components/Modals/ModalProvider";
 import {useState} from "react";
-import Modal from "../components/Modals/Modal";
-import RenameModal from "../components/Modals/RenameModal";
-import SelectModal from "../components/Modals/SelectModal";
-import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 import {useNavigation} from "@react-navigation/native";
 import {statuses} from "../constants/statuses";
 import dronePopUpOptions from "../constants/dronePopUpOptions";
@@ -54,7 +50,7 @@ const Drones = () => {
                     <Card
                         item={itemData.item}
                         onPress={() => navigation.navigate("Details", {droneId: itemData.item.id})}
-                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, onDeletion)}
+                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, navigation, onDeletion)}
                     />
                 )}
                 style={{width: "100%"}}

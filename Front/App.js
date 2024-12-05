@@ -5,8 +5,10 @@ import {View} from 'react-native';
 import Navigation from "./src/components/Navigation/Navigation";
 import {useFonts} from "expo-font";
 import {fonts} from "./src/constants/styles"
+import MapboxGL from "@rnmapbox/maps";
 
 SplashScreen.preventAutoHideAsync();
+MapboxGL.setAccessToken("pk.eyJ1IjoieW91dGlwaWUiLCJhIjoiY200YmxnMm9jMDFubDJqc2MxbHc1emtkeCJ9.1PXZyE_jsw6mugJ8bF1_yQ")
 
 
 export default function App() {

@@ -5,7 +5,7 @@ import SelectModal from "../components/Modals/SelectModal";
 import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 import {colors} from "./styles";
 
-export default (droneId, openModal, closeModal, onDeletion) => {
+export default (droneId, openModal, closeModal, navigation, onDeletion) => {
     const startMission = () => {
         const options = [
             {id: 10, label: "Mission 1"},
@@ -27,7 +27,7 @@ export default (droneId, openModal, closeModal, onDeletion) => {
         ));
     };
 
-    const observeDrone = () => console.log("observe", droneId);
+    const observeDrone = () => navigation.navigate("Observe", {droneId});
 
     const RTL = () => {
         openModal(() => (

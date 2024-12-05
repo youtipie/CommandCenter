@@ -1,4 +1,6 @@
-import {ScrollView, StyleSheet} from "react-native";
+import {useEffect} from "react";
+import {ScrollView, StyleSheet, Image} from "react-native";
+import MapboxGL from '@rnmapbox/maps';
 import {colors, commonIcons, missionPopUpIcons} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import {statuses} from "../../constants/statuses";
@@ -9,11 +11,9 @@ import MissionCard from "./components/MissionCard";
 import Modal from "../../components/Modals/Modal";
 import PreflightCheckModal from "../../components/Modals/PreflightCheckModal";
 import {useModal} from "../../components/Modals/ModalProvider";
-import {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import PopUpMenu from "../../components/PopUpMenu";
 import dronePopUpOptions from "../../constants/dronePopUpOptions";
-import MapView, {Marker} from "react-native-maps";
 
 const droneImg = require("../../../assets/drone-big.png");
 
@@ -27,6 +27,7 @@ const Details = ({route, navigation}) => {
         lat: 50.45466,
         lon: 30.5238,
         alt: 50,
+        bearing: 330,
         groundSpeed: 20,
         airSpeed: 0,
         distToRTL: 1500,
@@ -81,7 +82,7 @@ const Details = ({route, navigation}) => {
     useEffect(() => {
         navigation.setOptions({
             headerRight: ({tintColor}) => (
-                <PopUpMenu options={dronePopUpOptions(droneId, openModal, closeModal, onDeletion)}>
+                <PopUpMenu options={dronePopUpOptions(droneId, openModal, closeModal, navigation, onDeletion)}>
                     <FontAwesomeIcon
                         icon={commonIcons.dotsVertical}
                         size={moderateScale(20)}
@@ -116,27 +117,31 @@ const Details = ({route, navigation}) => {
     return (
         <ScrollView contentContainerStyle={styles.root}>
             <Section title="Current Position">
-                <MapView
-                    style={styles.map}
+                <MapboxGL.MapView
                     zoomEnabled={false}
-                    rotateEnabled={false}
                     scrollEnabled={false}
-                    initialRegion={{
-                        latitude: mockDroneData.lat,
-                        longitude: mockDroneData.lon,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
+                    logoEnabled={false}
+                    scaleBarEnabled={false}
+                    attributionEnabled={false}
+                    pitchEnabled={false}
+                    compassEnabled={false}
+                    rotateEnabled={false}
+                    style={styles.map}
                 >
-                    <Marker
-                        coordinate={{
-                            latitude: mockDroneData.lat,
-                            longitude: mockDroneData.lon,
-                        }}
-                        anchor={{x: 0.5, y: 0.5}}
-                        image={droneImg}
+                    <MapboxGL.Camera
+                        zoomLevel={10}
+                        centerCoordinate={[mockDroneData.lon, mockDroneData.lat]}
+                        animationDuration={0}
                     />
-                </MapView>
+                    <MapboxGL.MarkerView coordinate={[mockDroneData.lon, mockDroneData.lat]}>
+                        <Image source={droneImg}
+                               style={{
+                                   width: moderateScale(70),
+                                   height: moderateScale(70),
+                                   transform: [{rotate: `${mockDroneData.bearing}deg`}]
+                               }}/>
+                    </MapboxGL.MarkerView>
+                </MapboxGL.MapView>
                 <SectionText>Latitude: {mockDroneData.lat};</SectionText>
                 <SectionText>Longitude: {mockDroneData.lon};</SectionText>
                 <SectionText>Altitude: {mockDroneData.alt} m;</SectionText>
