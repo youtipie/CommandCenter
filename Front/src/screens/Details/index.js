@@ -165,6 +165,9 @@ const Details = ({route, navigation}) => {
                         title={mission.title}
                         description={mission.description}
                         timestamp={mission.timestamp}
+                        onPress={() => (
+                            navigation.navigate("Mission", {missionId: mission.id, editable: false})
+                        )}
                         popUpOptions={[
                             {
                                 label: "Start Mission",

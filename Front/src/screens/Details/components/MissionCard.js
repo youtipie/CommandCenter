@@ -1,13 +1,13 @@
-import {View, StyleSheet, Text} from "react-native";
+import {View, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {colors, commonIcons, fonts} from "../../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
 import {timestampToDateStr} from "../../../utils/timestampToDateStr";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import PopUpMenu from "../../../components/PopUpMenu";
 
-const MissionCard = ({missionId, title, description, timestamp, popUpOptions}) => {
+const MissionCard = ({missionId, title, description, timestamp, onPress, popUpOptions}) => {
     return (
-        <View style={styles.card}>
+        <TouchableOpacity onPress={onPress} style={styles.card}>
             <Text style={styles.date}>{timestampToDateStr(timestamp)}</Text>
             <View style={styles.indexContainer}>
                 <Text style={styles.index}>№{missionId}</Text>
@@ -25,7 +25,7 @@ const MissionCard = ({missionId, title, description, timestamp, popUpOptions}) =
                     />
                 </PopUpMenu>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 

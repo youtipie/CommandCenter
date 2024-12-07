@@ -17,6 +17,7 @@ import AddDrone from "../../screens/AddDrone";
 import RenameModal from "../Modals/RenameModal";
 import Details from "../../screens/Details";
 import Observe from "../../screens/Observe";
+import MissionEditor from "../../screens/MissionEditor";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -125,9 +126,7 @@ const Navigation = () => {
         {name: 'AddDrone', options: {title: "Add Drone"}, component: AddDrone},
         {name: 'Details', options: {title: "Details"}, component: Details},
         {name: 'Observe', options: {title: ""}, component: Observe},
-        // {name: 'MissionHistory', options: {}, component: null},
-        // {name: 'GuidedControl', options: {}, component: null},
-        // {name: 'MissionControl', options: {}, component: null},
+        {name: 'Mission', options: {title: ""}, component: MissionEditor},
     ];
 
     return (

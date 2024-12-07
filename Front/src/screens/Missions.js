@@ -9,7 +9,7 @@ import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
 import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 
-const Missions = () => {
+const Missions = ({navigation}) => {
     const {openModal, closeModal} = useModal();
 
     const [missions, setMissions] = useState([
@@ -103,6 +103,9 @@ const Missions = () => {
                 renderItem={(itemData) => (
                     <Card
                         item={itemData.item}
+                        onPress={() => (
+                            navigation.navigate("Mission", {missionId: itemData.item.id, editable: true})
+                        )}
                         popUpOptions={[
                             {
                                 label: "Start Mission",
