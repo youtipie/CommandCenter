@@ -1,24 +1,18 @@
-import {useEffect, useState, useRef} from "react";
-import {View, StyleSheet, Text, Image, TouchableWithoutFeedback, Pressable} from "react-native";
-import * as ScreenOrientation from 'expo-screen-orientation';
-import * as NavigationBar from "expo-navigation-bar";
+import {useEffect} from "react";
+import {View, StyleSheet, Text} from "react-native";
 import {colors, fonts, headerStyle} from "../constants/styles";
-import OverlayButtons from "../components/OverlayButtons";
 import {StatusBar} from 'expo-status-bar';
 import ScalableText from "../components/ScalableText";
-import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
+import {horizontalScale, moderateScale} from "../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {
-    faAngleUp,
     faBatteryEmpty,
     faBatteryFull,
     faBatteryHalf,
     faBatteryQuarter,
-    faBatteryThreeQuarters, faChevronUp, faHelicopterSymbol, faLocationDot, faSignal, faTowerBroadcast
+    faBatteryThreeQuarters, faSignal, faTowerBroadcast
 } from "@fortawesome/free-solid-svg-icons";
-import WaypointsLog from "../components/WaypointsLog";
-import droneImg from "../../assets/drone-small.png";
-import MapboxGL from "@rnmapbox/maps";
+import Map from "../components/Map";
 
 let WAYPOINTS = [
     {
@@ -279,87 +273,8 @@ let WAYPOINTS = [
     }
 ];
 
-const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
-
-// Function to get the midpoint between two latitude/longitude pairs
-function getMidpoint(lat1, lon1, lat2, lon2) {
-    // Convert degrees to radians
-    const toRad = (deg) => (deg * Math.PI) / 180;
-    const toDeg = (rad) => (rad * 180) / Math.PI;
-
-    const lat1Rad = toRad(lat1);
-    const lon1Rad = toRad(lon1);
-    const lat2Rad = toRad(lat2);
-    const lon2Rad = toRad(lon2);
-
-    const dLon = lon2Rad - lon1Rad;
-
-    const bx = Math.cos(lat2Rad) * Math.cos(dLon);
-    const by = Math.cos(lat2Rad) * Math.sin(dLon);
-
-    const midLat = Math.atan2(
-        Math.sin(lat1Rad) + Math.sin(lat2Rad),
-        Math.sqrt((Math.cos(lat1Rad) + bx) ** 2 + by ** 2)
-    );
-    const midLon = lon1Rad + Math.atan2(by, Math.cos(lat1Rad) + bx);
-
-    return [toDeg(midLon), toDeg(midLat)];
-}
-
-// Function to calculate the bearing (rotation in degrees) from point 1 to point 2
-function getBearing(lat1, lon1, lat2, lon2) {
-    // Convert degrees to radians
-    const toRad = (deg) => (deg * Math.PI) / 180;
-    const toDeg = (rad) => (rad * 180) / Math.PI;
-
-    const lat1Rad = toRad(lat1);
-    const lat2Rad = toRad(lat2);
-    const dLon = toRad(lon2 - lon1);
-
-    const y = Math.sin(dLon) * Math.cos(lat2Rad);
-    const x =
-        Math.cos(lat1Rad) * Math.sin(lat2Rad) -
-        Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
-
-    const bearing = Math.atan2(y, x);
-    return (toDeg(bearing) + 360) % 360; // Normalize to 0-360 degrees
-}
-
 const Observe = ({route, navigation}) => {
     const droneId = route.params?.droneId;
-    const cameraRef = useRef();
-
-    const waypointsWithCoordinates = WAYPOINTS.filter(waypoint => (
-        waypoint.x !== undefined &&
-        waypoint.y !== undefined &&
-        waypoint.z !== undefined
-    ));
-
-    const [headerShown, setHeaderShown] = useState(true);
-    const [styleURL, setStyleURL] = useState(styleURLs[styleURLs.length - 1]);
-    const [selectedWaypoint, setSelectedWaypoint] = useState();
-
-    useEffect(() => {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-        NavigationBar.setBehaviorAsync('overlay-swipe')
-        NavigationBar.setVisibilityAsync("hidden");
-        navigation.setOptions({headerShown: false});
-
-        return () => {
-            ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-            NavigationBar.setVisibilityAsync("visible");
-        }
-    }, []);
-
-    const handlePress = () => {
-        if (selectedWaypoint !== null && selectedWaypoint !== undefined) {
-            setSelectedWaypoint(null);
-            return;
-        }
-        navigation.setOptions({headerShown: headerShown});
-        setHeaderShown(!headerShown);
-    }
-
     const mockDroneData = {
         lat: 50.45466,
         lon: 30.5238,
@@ -405,126 +320,12 @@ const Observe = ({route, navigation}) => {
     }, []);
 
     return (
-        <View style={styles.root}>
-            <StatusBar hidden={true} translucent/>
-            <View style={styles.map}>
-                <MapboxGL.MapView
-                    styleURL={styleURL}
-                    logoEnabled={false}
-                    attributionEnabled={false}
-                    compassEnabled={true}
-                    compassPosition={{left: horizontalScale(5), top: verticalScale(30)}}
-                    style={styles.map}
-                >
-                    <MapboxGL.Camera
-                        ref={cameraRef}
-                        zoomLevel={15}
-                        centerCoordinate={[mockDroneData.lon, mockDroneData.lat]}
-                        animationDuration={0}
-                    />
-                    <MapboxGL.MarkerView
-                        coordinate={[mockDroneData.lon, mockDroneData.lat]}
-                        allowOverlap
-                    >
-                        <Image source={droneImg}
-                               style={{
-                                   width: moderateScale(70),
-                                   height: moderateScale(70),
-                                   transform: [{rotate: `${mockDroneData.bearing}deg`}]
-                               }}/>
-                    </MapboxGL.MarkerView>
-                    <MapboxGL.MarkerView
-                        coordinate={[mockDroneData.homeLocation.log, mockDroneData.homeLocation.lat]}
-                        allowOverlap
-                    >
-                        <FontAwesomeIcon
-                            icon={faHelicopterSymbol}
-                            size={moderateScale(32)}
-                            color={colors.accent100}
-                        />
-                    </MapboxGL.MarkerView>
-                    {waypointsWithCoordinates.slice(0, -1).map((waypoint, index) => (
-                        <MapboxGL.MarkerView
-                            key={index}
-                            coordinate={getMidpoint(waypoint.x, waypoint.y, waypointsWithCoordinates[index + 1].x, waypointsWithCoordinates[index + 1].y)}
-                            allowOverlap
-                        >
-                            <FontAwesomeIcon
-                                icon={faAngleUp}
-                                color={colors.error200}
-                                size={moderateScale(25)}
-                                style={{transform: [{rotate: `${getBearing(waypoint.x, waypoint.y, waypointsWithCoordinates[index + 1].x, waypointsWithCoordinates[index + 1].y)}deg`}]}}
-                            />
-                        </MapboxGL.MarkerView>
-                    ))}
-                    <MapboxGL.ShapeSource
-                        id="markersLineSource"
-                        shape={{
-                            type: "Feature",
-                            geometry: {
-                                type: "LineString",
-                                coordinates: waypointsWithCoordinates.map(waypoint => [waypoint.y, waypoint.x]),
-                            },
-                        }}
-                    >
-                        <MapboxGL.LineLayer
-                            id="markersLineLayer"
-                            style={{
-                                lineColor: colors.error200,
-                                lineWidth: 4,
-                            }}
-                        />
-                    </MapboxGL.ShapeSource>
-                    <MapboxGL.ShapeSource
-                        id="dottedLineSource"
-                        shape={{
-                            type: "Feature",
-                            geometry: {
-                                type: "LineString",
-                                coordinates: [
-                                    [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x],
-                                    [mockDroneData.homeLocation.log, mockDroneData.homeLocation.lat],
-                                    [waypointsWithCoordinates[waypointsWithCoordinates.length - 1].y, waypointsWithCoordinates[waypointsWithCoordinates.length - 1].x],
-                                ],
-                            },
-                        }}
-                    >
-                        <MapboxGL.LineLayer
-                            id="dottedLineLayer"
-                            style={{
-                                lineColor: colors.error200,
-                                lineWidth: 4,
-                                lineDasharray: [2, 4],
-                            }}
-                        />
-                    </MapboxGL.ShapeSource>
-                    {waypointsWithCoordinates.map((waypoint, index) => (
-                        <MapboxGL.MarkerView
-                            key={index}
-                            coordinate={[waypoint.y, waypoint.x]}
-                            anchor={{x: 0.5, y: 1}}
-                            allowOverlap
-                        >
-                            <Pressable onPress={() => setSelectedWaypoint(index)}>
-                                <FontAwesomeIcon
-                                    icon={faLocationDot}
-                                    color={index === selectedWaypoint ? colors.accent300 : colors.accent100}
-                                    size={moderateScale(32)}
-                                />
-                            </Pressable>
-                        </MapboxGL.MarkerView>
-                    ))}
-                </MapboxGL.MapView>
-                <View style={styles.overlayContainer}>
-                    <OverlayButtons
-                        droneId={droneId}
-                        cameraRef={cameraRef}
-                        onStyleURLChange={setStyleURL}
-                        styleURLs={styleURLs}
-                        centerLocation={[mockDroneData.lon, mockDroneData.lat]}
-                    />
-                </View>
-            </View>
+        <Map
+            waypoints={WAYPOINTS}
+            droneId={droneId}
+            droneData={mockDroneData}
+        >
+            <StatusBar translucent hidden/>
             <View style={styles.telemetryContainer}>
                 <View style={styles.telemetryHeader}>
                     <View style={styles.telemetryHeaderBlock}>
@@ -583,14 +384,7 @@ const Observe = ({route, navigation}) => {
                     </View>
                 </View>
             </View>
-            <View style={styles.overlayContainer}>
-                <WaypointsLog
-                    waypoints={WAYPOINTS}
-                    selectedIndex={selectedWaypoint}
-                    onSelectedIndex={setSelectedWaypoint}
-                />
-            </View>
-        </View>
+        </Map>
     );
 };
 
