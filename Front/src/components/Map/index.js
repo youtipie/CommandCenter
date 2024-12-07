@@ -1,22 +1,15 @@
 import {useEffect, useRef, useState} from "react";
-import {Image, StyleSheet, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import MapboxGL from "@rnmapbox/maps";
-import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
-import droneImg from "../../../assets/drone-small.png";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {
-    faAngleUp,
-    faHelicopterSymbol,
-    faLocationDot,
-} from "@fortawesome/free-solid-svg-icons";
-import {colors} from "../../constants/styles";
-import getMidpoint from "../../utils/getMidpoint";
-import getBearing from "../../utils/getBearing";
+import {horizontalScale, verticalScale} from "../../utils/metrics";
 import OverlayButtons from "../OverlayButtons";
 import WaypointsLog from "../WaypointsLog";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as NavigationBar from "expo-navigation-bar";
 import {useNavigation} from "@react-navigation/native";
+import DroneMarker from "./components/DroneMarker";
+import MarkerLines from "./components/MarkerLines";
+import Markers from "./components/Markers";
 
 const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
 
@@ -77,6 +70,7 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
                     logoEnabled={false}
                     attributionEnabled={false}
                     compassEnabled={true}
+                    rotateEnabled={false}
                     compassPosition={{left: horizontalScale(5), top: verticalScale(30)}}
                     onPress={handlePress}
                 >
@@ -87,106 +81,17 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
                         animationDuration={0}
                     />
                     {droneData &&
-                        <>
-                            <MapboxGL.MarkerView
-                                coordinate={[droneData.lon, droneData.lat]}
-                                allowOverlap
-                            >
-                                <Image source={droneImg}
-                                       style={{
-                                           width: moderateScale(70),
-                                           height: moderateScale(70),
-                                           transform: [{rotate: `${droneData.bearing}deg`}]
-                                       }}/>
-                            </MapboxGL.MarkerView>
-                            <MapboxGL.MarkerView
-                                coordinate={[droneData.homeLocation.log, droneData.homeLocation.lat]}
-                                allowOverlap
-                            >
-                                <FontAwesomeIcon
-                                    icon={faHelicopterSymbol}
-                                    size={moderateScale(32)}
-                                    color={colors.accent100}
-                                />
-                            </MapboxGL.MarkerView>
-                        </>
+                        <DroneMarker droneData={droneData} waypointsWithCoordinates={waypointsWithCoordinates}/>
                     }
-                    {waypointsWithCoordinates.slice(0, -1).map((waypoint, index) => (
-                        <MapboxGL.MarkerView
-                            key={index}
-                            coordinate={getMidpoint(waypoint.x, waypoint.y, waypointsWithCoordinates[index + 1].x, waypointsWithCoordinates[index + 1].y)}
-                            allowOverlap
-                        >
-                            <FontAwesomeIcon
-                                icon={faAngleUp}
-                                color={colors.error200}
-                                size={moderateScale(25)}
-                                style={{transform: [{rotate: `${getBearing(waypoint.x, waypoint.y, waypointsWithCoordinates[index + 1].x, waypointsWithCoordinates[index + 1].y)}deg`}]}}
-                            />
-                        </MapboxGL.MarkerView>
-                    ))}
-                    <MapboxGL.ShapeSource
-                        id="markersLineSource"
-                        shape={{
-                            type: "Feature",
-                            geometry: {
-                                type: "LineString",
-                                coordinates: waypointsWithCoordinates.map(waypoint => [waypoint.y, waypoint.x]),
-                            },
-                        }}
-                    >
-                        <MapboxGL.LineLayer
-                            id="markersLineLayer"
-                            style={{
-                                lineColor: colors.error200,
-                                lineWidth: 4,
-                            }}
-                            layerIndex={100}
-                        />
-                    </MapboxGL.ShapeSource>
-                    {droneData &&
-                        <MapboxGL.ShapeSource
-                            id="dottedLineSource"
-                            shape={{
-                                type: "Feature",
-                                geometry: {
-                                    type: "LineString",
-                                    coordinates: [
-                                        [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x],
-                                        [droneData.homeLocation.log, droneData.homeLocation.lat],
-                                        [waypointsWithCoordinates[waypointsWithCoordinates.length - 1].y, waypointsWithCoordinates[waypointsWithCoordinates.length - 1].x],
-                                    ],
-                                },
-                            }}
-                        >
-                            <MapboxGL.LineLayer
-                                id="dottedLineLayer"
-                                style={{
-                                    lineColor: colors.error200,
-                                    lineWidth: 4,
-                                    lineDasharray: [2, 4],
-                                }}
-                            />
-                        </MapboxGL.ShapeSource>
-                    }
-                    {waypointsWithCoordinates.map((waypoint, index) => (
-                        <MapboxGL.PointAnnotation
-                            id={`${index}-annotation`}
-                            key={`${index}-${selectedWaypoint}`}
-                            coordinate={[waypoint.y, waypoint.x]}
-                            anchor={{x: 0.5, y: 1}}
-                            allowOverlap
-                            draggable={isEditable}
-                            onSelected={() => handleSelectWaypoint(index)}
-                            onDragEnd={(payload) => handleMarkerDragEnd(payload, index)}
-                        >
-                            <FontAwesomeIcon
-                                icon={faLocationDot}
-                                color={index === waypointsWithCoordinates.indexOf(waypoints[selectedWaypoint]) ? colors.accent300 : colors.accent100}
-                                size={moderateScale(32)}
-                            />
-                        </MapboxGL.PointAnnotation>
-                    ))}
+                    <MarkerLines waypointsWithCoordinates={waypointsWithCoordinates}/>
+                    <Markers
+                        isEditable={isEditable}
+                        waypoints={waypoints}
+                        waypointsWithCoordinates={waypointsWithCoordinates}
+                        selectedWaypoint={selectedWaypoint}
+                        handleSelectWaypoint={handleSelectWaypoint}
+                        handleMarkerDragEnd={handleMarkerDragEnd}
+                    />
                 </MapboxGL.MapView>
                 <View style={styles.overlayContainer}>
                     <OverlayButtons
