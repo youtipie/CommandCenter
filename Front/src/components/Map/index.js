@@ -30,10 +30,10 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
     const [selectedWaypoint, setSelectedWaypoint] = useState();
 
     const waypointsWithCoordinates = waypoints.filter(waypoint => (
-        waypoint.x !== undefined &&
-        waypoint.y !== undefined &&
-        waypoint.z !== undefined
+        waypoint.x !== 0 &&
+        waypoint.y !== 0
     ));
+
     const centerCamera = droneData ? [droneData.lon, droneData.lat] : [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x];
 
     const handlePress = () => {
@@ -43,6 +43,17 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
         }
         navigation.setOptions({headerShown: headerShown});
         setHeaderShown(!headerShown);
+    }
+
+    const handleSelectWaypoint = (index) => {
+        const marker = waypointsWithCoordinates[index];
+        setSelectedWaypoint(waypoints.indexOf(marker));
+    }
+
+    const handleMarkerDragEnd = (payload, index) => {
+        const {coordinates} = payload.geometry;
+        const marker = waypointsWithCoordinates[index];
+        onDragEnd?.(coordinates.reverse(), waypoints.indexOf(marker));
     }
 
     useEffect(() => {
@@ -166,12 +177,12 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
                             anchor={{x: 0.5, y: 1}}
                             allowOverlap
                             draggable={isEditable}
-                            onSelected={() => setSelectedWaypoint(index)}
-                            onDragEnd={(payload) => console.log(payload.geometry.coordinates, index)}
+                            onSelected={() => handleSelectWaypoint(index)}
+                            onDragEnd={(payload) => handleMarkerDragEnd(payload, index)}
                         >
                             <FontAwesomeIcon
                                 icon={faLocationDot}
-                                color={index === selectedWaypoint ? colors.accent300 : colors.accent100}
+                                color={index === waypointsWithCoordinates.indexOf(waypoints[selectedWaypoint]) ? colors.accent300 : colors.accent100}
                                 size={moderateScale(32)}
                             />
                         </MapboxGL.PointAnnotation>

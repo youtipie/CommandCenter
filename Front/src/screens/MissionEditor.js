@@ -1,7 +1,7 @@
 import {View, StyleSheet} from "react-native";
 import Map from "../components/Map";
 import {StatusBar} from "expo-status-bar";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {headerStyle} from "../constants/styles";
 
 let WAYPOINTS = [
@@ -17,9 +17,9 @@ let WAYPOINTS = [
         "param2": 0,
         "param3": 0,
         "param4": 0,
-        "x": 50.4501,
-        "y": 30.5234,
-        "z": 10
+        "x": 0,
+        "y": 0,
+        "z": 0
     },
     {
         "target_system": 1,
@@ -265,6 +265,9 @@ let WAYPOINTS = [
 
 const MissionEditor = ({navigation, route}) => {
     const {missionId, editable} = route.params;
+
+    const [waypoints, setWaypoints] = useState(WAYPOINTS);
+
     // Feeeetch later...
     const mockMissionData = {
         id: 1,
@@ -272,6 +275,18 @@ const MissionEditor = ({navigation, route}) => {
         description: "3 km in 360 minutes",
         timestamp: 1735617575000
     };
+
+    const onMarkerDragEnd = (coordinates, index) => {
+        setWaypoints(prevState => {
+            const updatedWaypoints = [...prevState];
+            updatedWaypoints[index] = {
+                ...updatedWaypoints[index],
+                x: coordinates[0],
+                y: coordinates[1],
+            };
+            return updatedWaypoints;
+        });
+    }
 
     useEffect(() => {
         navigation.setOptions({
@@ -283,8 +298,9 @@ const MissionEditor = ({navigation, route}) => {
 
     return (
         <Map
-            waypoints={WAYPOINTS}
+            waypoints={waypoints}
             isEditable={editable}
+            onDragEnd={onMarkerDragEnd}
         >
             <StatusBar translucent hidden/>
         </Map>
