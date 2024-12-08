@@ -1,3 +1,4 @@
+import {useCallback, useRef} from "react";
 import {View, StyleSheet, Text, Pressable, TouchableOpacity} from "react-native";
 import Animated, {
     interpolate,
@@ -12,10 +13,10 @@ import ScalableText from "./ScalableText";
 import DraggableFlatList from "react-native-draggable-flatlist/src/components/DraggableFlatList";
 import SwipeableItem, {
     OpenDirection,
-    useSwipeableItemParams,
 } from "react-native-swipeable-item";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {useCallback, useRef} from "react";
+import Cell from "./Cell";
+import SelectList from "./SelectList";
 
 const MOCK_COMMANDS = {
     "16": {
@@ -295,7 +296,7 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
             });
 
             if (translateY.value < threshold) {
-                translateY.value = SCREEN_HEIGHT - MENU_HEIGHT + CELL_HEIGHT;
+                translateY.value = 0;
             } else {
                 translateY.value = SCREEN_HEIGHT;
             }
@@ -303,11 +304,11 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
     });
 
     const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{translateY: interpolate(translateY.value, [SCREEN_HEIGHT, SCREEN_HEIGHT - MENU_HEIGHT], [SCREEN_HEIGHT, SCREEN_HEIGHT - MENU_HEIGHT])}],
+        transform: [{translateY: interpolate(translateY.value, [SCREEN_HEIGHT, 0], [SCREEN_HEIGHT, 0])}],
     }));
 
     const getColName = (defaultName) => {
-        if (selectedIndex === undefined || selectedWaypoint === undefined) {
+        if (isNaN(selectedIndex)) {
             return defaultName;
         }
         const selectedWaypoint = waypoints[selectedIndex];
@@ -320,6 +321,35 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
         onWaypointsChange?.(data);
         [...swipeableRefs.current.entries()].forEach(([key, ref]) => {
             if (ref) ref.close();
+        });
+    }
+
+    const onParamsEdit = (index, field, value) => {
+        onWaypointsChange?.(prev => {
+            let data = [...prev];
+            data[index] = {
+                ...data[index],
+                [field]: Number.parseFloat(value),
+            };
+            return data;
+        });
+    }
+
+    const onCommandChange = (index, value) => {
+        console.log(index, value)
+        const currentCommand = waypoints[index]?.command;
+
+        if (currentCommand === value) {
+            return;
+        }
+
+        onWaypointsChange?.(prev => {
+            let data = [...prev];
+            data[index] = {
+                ...data[index],
+                command: value,
+            };
+            return data;
         });
     }
 
@@ -350,6 +380,7 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
                         justifyContent: "center",
                     }}>
                         <TouchableOpacity
+                            style={styles.deleteWP}
                             onPress={() => {
                                 handleWaypointDrag(waypoints.filter((waypoint) => waypoint !== item));
                             }}
@@ -371,28 +402,78 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
                         <ScalableText style={styles.text}>{index + 1}</ScalableText>
                     </View>
                     <View style={[styles.cell, styles.cellMedium]}>
-                        <Text style={styles.text}>{MOCK_COMMANDS[waypoint.command].name}</Text>
+                        <View style={styles.selectWrapper}>
+                            <SelectList
+                                disabled={!isEditing}
+                                textStyle={styles.text}
+                                onSelect={(value) => onCommandChange(index, value)}
+                                options={Object.entries(MOCK_COMMANDS).map(([key, value]) => ({
+                                    value: Number.parseInt(key),
+                                    label: value.name,
+                                }))}
+                            >
+                                <Text style={styles.text}>{MOCK_COMMANDS[waypoint.command].name}</Text>
+                            </SelectList>
+                        </View>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.param1}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "param1", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.param1}</Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.param2}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "param2", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.param2}</Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.param3}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "param3", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.param3}</Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.param4}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "param4", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.param4}
+                        </Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.x}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "x", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.x}
+                        </Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.y}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "y", value)}
+                            style={styles.text}
+                        >
+                            {waypoint.y}
+                        </Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
-                        <ScalableText style={styles.text}>{waypoint.z}</ScalableText>
+                        <Cell
+                            isEditing={isEditing}
+                            onChange={(value) => onParamsEdit(index, "z", value)} style={styles.text}
+                        >
+                            {waypoint.z}
+                        </Cell>
                     </View>
                     <View style={[styles.cell, styles.cellExpand]}>
                         <ScalableText style={styles.text}>{waypoint.dist}</ScalableText>
@@ -445,6 +526,7 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onW
                     keyExtractor={(item, index) => index}
                     activationDistance={20}
                     renderItem={renderItem}
+                    contentContainerStyle={{paddingBottom: CELL_HEIGHT}}
                 />
             </View>
         </Animated.View>
@@ -494,5 +576,14 @@ const styles = StyleSheet.create({
     },
     cellMedium: {
         flex: 2
+    },
+    deleteWP: {
+        height: "100%",
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    selectWrapper: {
+        width: "100%",
     }
 });

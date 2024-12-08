@@ -8,7 +8,7 @@ import getBearing from "../../../utils/getBearing";
 
 const MarkerLines = ({waypointsWithCoordinates}) => {
     return (
-        waypointsWithCoordinates.length > 0 &&
+        waypointsWithCoordinates.length > 1 &&
         <>
             {waypointsWithCoordinates.slice(0, -1).map((waypoint, index) => (
                 <MapboxGL.MarkerView

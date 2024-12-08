@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         color: colors.primaryText200
     },
     dropdownContainer: {
-        marginTop: verticalScale(-40),
+        marginTop: verticalScale(-30),
         backgroundColor: colors.primary100,
         padding: moderateScale(5),
         borderRadius: 3,

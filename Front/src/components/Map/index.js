@@ -14,7 +14,15 @@ import Markers from "./components/Markers";
 const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
 
 
-const Map = ({children, waypoints, onWaypointsChange, droneId = null, droneData, isEditable, onDragEnd}) => {
+const Map = ({
+                 children,
+                 waypoints,
+                 onWaypointsChange = null,
+                 droneId = null,
+                 droneData = null,
+                 isEditable = false,
+                 onDragEnd = null
+             }) => {
     const cameraRef = useRef();
     const navigation = useNavigation();
 
@@ -23,8 +31,8 @@ const Map = ({children, waypoints, onWaypointsChange, droneId = null, droneData,
     const [selectedWaypoint, setSelectedWaypoint] = useState();
 
     const waypointsWithCoordinates = waypoints.filter(waypoint => (
-        waypoint.x !== 0 &&
-        waypoint.y !== 0
+        (!isNaN(waypoint.x) && waypoint.x !== 0) &&
+        (!isNaN(waypoint.y) && waypoint.y !== 0)
     ));
 
     const centerCamera = droneData ? [droneData.lon, droneData.lat] : waypointsWithCoordinates[0] ? [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x] : undefined;

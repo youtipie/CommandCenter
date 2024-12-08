@@ -1,12 +1,14 @@
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
-import {Menu, MenuOption, MenuOptions, MenuTrigger} from "react-native-popup-menu";
+import {Menu, MenuOption, MenuOptions, MenuTrigger, renderers} from "react-native-popup-menu";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale} from "../utils/metrics";
 
-const PopUpMenu = ({children, options}) => {
+const PopUpMenu = ({children, textStyle, customBody, options = [], renderer = renderers.ContextMenu}) => {
     return (
-        <Menu>
+        <Menu
+            renderer={renderer}
+        >
             <MenuTrigger customStyles={{TriggerTouchableComponent: TouchableOpacity}}>
                 {children}
             </MenuTrigger>
@@ -21,10 +23,11 @@ const PopUpMenu = ({children, options}) => {
                                     size={moderateScale(18)}
                                 />
                             </View>
-                            <Text style={styles.label}>{option.label}</Text>
+                            <Text style={[styles.label, textStyle]}>{option.label}</Text>
                         </View>
                     </MenuOption>
                 ))}
+                {customBody?.()}
             </MenuOptions>
         </Menu>
     );
