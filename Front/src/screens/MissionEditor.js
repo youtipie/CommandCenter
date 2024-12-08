@@ -301,6 +301,7 @@ const MissionEditor = ({navigation, route}) => {
             waypoints={waypoints}
             isEditable={editable}
             onDragEnd={onMarkerDragEnd}
+            onWaypointsChange={setWaypoints}
         >
             <StatusBar translucent hidden/>
         </Map>

@@ -322,6 +322,7 @@ const Observe = ({route, navigation}) => {
     return (
         <Map
             waypoints={WAYPOINTS}
+            isEditable={false}
             droneId={droneId}
             droneData={mockDroneData}
         >

@@ -14,7 +14,7 @@ import Markers from "./components/Markers";
 const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
 
 
-const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDragEnd}) => {
+const Map = ({children, waypoints, onWaypointsChange, droneId = null, droneData, isEditable, onDragEnd}) => {
     const cameraRef = useRef();
     const navigation = useNavigation();
 
@@ -27,7 +27,7 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
         waypoint.y !== 0
     ));
 
-    const centerCamera = droneData ? [droneData.lon, droneData.lat] : [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x];
+    const centerCamera = droneData ? [droneData.lon, droneData.lat] : waypointsWithCoordinates[0] ? [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x] : undefined;
 
     const handlePress = () => {
         if (selectedWaypoint !== null && selectedWaypoint !== undefined) {
@@ -107,8 +107,10 @@ const Map = ({children, waypoints, droneId = null, droneData, isEditable, onDrag
             <View style={styles.overlayContainer}>
                 <WaypointsLog
                     waypoints={waypoints}
+                    isEditing={isEditable}
                     selectedIndex={selectedWaypoint}
                     onSelectedIndex={setSelectedWaypoint}
+                    onWaypointsChange={onWaypointsChange}
                 />
             </View>
         </View>

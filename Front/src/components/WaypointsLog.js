@@ -1,4 +1,4 @@
-import {View, StyleSheet, Text, ScrollView, Pressable} from "react-native";
+import {View, StyleSheet, Text, Pressable, TouchableOpacity} from "react-native";
 import Animated, {
     interpolate,
     useAnimatedGestureHandler,
@@ -6,10 +6,16 @@ import Animated, {
     useSharedValue, withDecay,
 } from "react-native-reanimated";
 import {PanGestureHandler} from "react-native-gesture-handler";
-import {colors, fonts} from "../constants/styles";
+import {colors, commonIcons, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import ScalableText from "./ScalableText";
-import {useState} from "react";
+import DraggableFlatList from "react-native-draggable-flatlist/src/components/DraggableFlatList";
+import SwipeableItem, {
+    OpenDirection,
+    useSwipeableItemParams,
+} from "react-native-swipeable-item";
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
+import {useCallback, useRef} from "react";
 
 const MOCK_COMMANDS = {
     "16": {
@@ -264,7 +270,8 @@ const MOCK_COMMANDS = {
 
 const CELL_HEIGHT = moderateScale(20)
 
-const WaypointsLog = ({waypoints, selectedIndex, onSelectedIndex}) => {
+const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex, onWaypointsChange}) => {
+    const swipeableRefs = useRef(new Map());
     const MENU_HEIGHT = Math.min(verticalScale(180), (waypoints.length + 1) * CELL_HEIGHT);
     const SCREEN_HEIGHT = MENU_HEIGHT - CELL_HEIGHT;
     const translateY = useSharedValue(SCREEN_HEIGHT);
@@ -300,13 +307,100 @@ const WaypointsLog = ({waypoints, selectedIndex, onSelectedIndex}) => {
     }));
 
     const getColName = (defaultName) => {
-        if (selectedIndex === undefined) {
+        if (selectedIndex === undefined || selectedWaypoint === undefined) {
             return defaultName;
         }
         const selectedWaypoint = waypoints[selectedIndex];
         const commandSpecs = MOCK_COMMANDS[selectedWaypoint.command];
         return commandSpecs[defaultName.toLowerCase()]?.name;
     }
+
+    const handleWaypointDrag = (data) => {
+        onSelectedIndex(undefined);
+        onWaypointsChange?.(data);
+        [...swipeableRefs.current.entries()].forEach(([key, ref]) => {
+            if (ref) ref.close();
+        });
+    }
+
+    const renderItem = useCallback(({item, drag, isActive, getIndex}) => {
+        const waypoint = item;
+        const index = getIndex();
+
+        return (
+            <SwipeableItem
+                ref={(ref) => swipeableRefs.current.set(index, ref)}
+                item={item}
+                snapPointsLeft={[horizontalScale(50)]}
+                swipeEnabled={isEditing}
+                onChange={({openDirection}) => {
+                    if (openDirection !== OpenDirection.NONE) {
+                        onSelectedIndex(index);
+                        [...swipeableRefs.current.entries()].forEach(([key, ref]) => {
+                            if (key !== index && ref) ref.close();
+                        });
+                    }
+                }}
+                renderUnderlayLeft={() => (
+                    <View style={{
+                        width: horizontalScale(50),
+                        height: "100%",
+                        alignSelf: "flex-end",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                handleWaypointDrag(waypoints.filter((waypoint) => waypoint !== item));
+                            }}
+                        >
+                            <FontAwesomeIcon
+                                icon={commonIcons.trash} size={moderateScale(14)}
+                                color={colors.accent200}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
+            >
+                <Pressable
+                    style={[styles.row, selectedIndex === index && styles.selectedRow]}
+                    onPress={() => onSelectedIndex(index)}
+                    onLongPress={(event) => isEditing ? drag(event) : onSelectedIndex(index)}
+                >
+                    <View style={[styles.cell, styles.cellSmall]}>
+                        <ScalableText style={styles.text}>{index + 1}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellMedium]}>
+                        <Text style={styles.text}>{MOCK_COMMANDS[waypoint.command].name}</Text>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.param1}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.param2}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.param3}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.param4}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.x}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.y}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.z}</ScalableText>
+                    </View>
+                    <View style={[styles.cell, styles.cellExpand]}>
+                        <ScalableText style={styles.text}>{waypoint.dist}</ScalableText>
+                    </View>
+                </Pressable>
+            </SwipeableItem>
+        );
+    }, [selectedIndex])
 
     return (
         <Animated.View style={[styles.menu, {height: MENU_HEIGHT}, animatedStyle]}>
@@ -344,43 +438,15 @@ const WaypointsLog = ({waypoints, selectedIndex, onSelectedIndex}) => {
                     </View>
                 </Animated.View>
             </PanGestureHandler>
-            <ScrollView contentContainerStyle={styles.log}>
-                {waypoints.map((waypoint, index) => (
-                    <Pressable key={index} style={[styles.row, selectedIndex === index && styles.selectedRow]}
-                               onPress={() => onSelectedIndex(index)}>
-                        <View style={[styles.cell, styles.cellSmall]}>
-                            <ScalableText style={styles.text}>{index + 1}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellMedium]}>
-                            <Text style={styles.text}>{MOCK_COMMANDS[waypoint.command].name}</Text>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.param1}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.param2}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.param3}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.param4}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.x}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.y}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.z}</ScalableText>
-                        </View>
-                        <View style={[styles.cell, styles.cellExpand]}>
-                            <ScalableText style={styles.text}>{waypoint.dist}</ScalableText>
-                        </View>
-                    </Pressable>
-                ))}
-            </ScrollView>
+            <View style={styles.log}>
+                <DraggableFlatList
+                    data={waypoints}
+                    onDragEnd={({data}) => handleWaypointDrag(data)}
+                    keyExtractor={(item, index) => index}
+                    activationDistance={20}
+                    renderItem={renderItem}
+                />
+            </View>
         </Animated.View>
     );
 };
