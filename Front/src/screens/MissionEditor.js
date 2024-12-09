@@ -287,7 +287,8 @@ const MissionEditor = ({navigation, route}) => {
             return updatedWaypoints;
         });
     }
-
+    
+    // TODO: Add popupmenu to enter editing mode. By default only can view
     useEffect(() => {
         navigation.setOptions({
             title: mockMissionData.title,
