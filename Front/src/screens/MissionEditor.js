@@ -1,8 +1,13 @@
-import {View, StyleSheet} from "react-native";
+import {View} from "react-native";
 import Map from "../components/Map";
 import {StatusBar} from "expo-status-bar";
 import {useEffect, useState} from "react";
-import {headerStyle} from "../constants/styles";
+import {commonIcons, headerStyle} from "../constants/styles";
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
+import {horizontalScale, moderateScale} from "../utils/metrics";
+import PopUpMenu from "../components/PopUpMenu";
+import missionPopUpOptions from "../constants/missionPopUpOptions";
+import {useModal} from "../components/Modals/ModalProvider";
 
 let WAYPOINTS = [
     {
@@ -265,7 +270,7 @@ let WAYPOINTS = [
 
 const MissionEditor = ({navigation, route}) => {
     const {missionId, editable} = route.params;
-
+    const {openModal, closeModal} = useModal();
     const [waypoints, setWaypoints] = useState(WAYPOINTS);
 
     // Feeeetch later...
@@ -287,8 +292,11 @@ const MissionEditor = ({navigation, route}) => {
             return updatedWaypoints;
         });
     }
-    
-    // TODO: Add popupmenu to enter editing mode. By default only can view
+
+    const onDeletion = (missionId) => {
+        navigation.navigate("Drawer", {screen: "Drones"});
+    }
+
     useEffect(() => {
         navigation.setOptions({
             title: mockMissionData.title,
@@ -296,6 +304,28 @@ const MissionEditor = ({navigation, route}) => {
             headerTransparent: true,
         });
     }, []);
+
+    useEffect(() => {
+        if (!editable) {
+            navigation.setOptions({
+                headerRight: ({tintColor}) => (
+                    <PopUpMenu options={missionPopUpOptions(missionId, openModal, closeModal, navigation, onDeletion)}>
+                        <FontAwesomeIcon
+                            icon={commonIcons.dotsVertical}
+                            color={tintColor}
+                            size={moderateScale(24)}
+                            style={{
+                                marginRight: horizontalScale(15)
+                            }}
+                        />
+                    </PopUpMenu>
+                )
+            });
+        }
+        return () => {
+            navigation.setOptions({headerRight: null});
+        }
+    }, [editable]);
 
     return (
         <Map
@@ -310,5 +340,3 @@ const MissionEditor = ({navigation, route}) => {
 };
 
 export default MissionEditor;
-
-const styles = StyleSheet.create({});

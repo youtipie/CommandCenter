@@ -7,12 +7,15 @@ const Cell = ({isEditing, onChange, style, children}) => {
     const [value, setValue] = useState(children.toString());
 
     const handleValueChange = (value) => {
-        value = value === "" ? 0 : value;
-
         const decimalRegex = /^-?\d*\.?\d*$/;
         if (decimalRegex.test(value)) {
-            setValue(value);
-            onChange?.(value);
+            if (value === "") {
+                setValue("0");
+                onChange?.(0);
+            } else {
+                setValue(value);
+                onChange?.(value);
+            }
         }
     }
 

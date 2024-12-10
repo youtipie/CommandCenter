@@ -8,6 +8,7 @@ import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
 import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
+import missionPopUpOptions from "../constants/missionPopUpOptions";
 
 const Missions = ({navigation}) => {
     const {openModal, closeModal} = useModal();
@@ -29,64 +30,8 @@ const Missions = ({navigation}) => {
         }
     ]);
 
-    const startMission = (missionId) => {
-        // Fetch later
-        const options = [
-            {
-                id: 10,
-                label: "Mavick 14"
-            },
-            {
-                id: 11,
-                label: "Mavick 15"
-            }
-        ];
-        openModal(() => (
-            <SelectModal
-                title="Select drone"
-                options={options}
-                onSelect={(drone) => {
-                    closeModal();
-                    openModal(() => (
-                        <PreflightCheckModal
-                            onStartMission={() => console.log(`Started mission${missionId} for drone${drone.id}`)}
-                        />
-                    ));
-                }}
-            />
-        ));
-    }
-
-    const editMission = (missionId) => {
-        console.log("editMission", missionId);
-    }
-
-    const renameMission = (missionId) => {
-        openModal(() => (
-            <RenameModal
-                onRename={(text) => (
-                    console.log("rename", missionId, text)
-                )}
-            />
-        ));
-    }
-
-    const deleteMission = (missionId) => {
-        openModal(() => (
-                <Modal
-                    title="Confirm action"
-                    content="This action cannot be undone!"
-                    buttonText="Confirm"
-                    buttonColor={colors.error300}
-                    onPress={
-                        () => {
-                            setMissions(missions.filter(mission => mission.id !== missionId));
-                            closeModal();
-                        }
-                    }
-                />
-            )
-        );
+    const onDeletion = (missionId) => {
+        setMissions(missions.filter(mission => mission.id !== missionId));
     }
 
     return (
@@ -104,30 +49,9 @@ const Missions = ({navigation}) => {
                     <Card
                         item={itemData.item}
                         onPress={() => (
-                            navigation.navigate("Mission", {missionId: itemData.item.id, editable: true})
+                            navigation.navigate("Mission", {missionId: itemData.item.id, editable: false})
                         )}
-                        popUpOptions={[
-                            {
-                                label: "Start Mission",
-                                icon: missionPopUpIcons.startMission,
-                                onSelect: () => startMission(itemData.item.id)
-                            },
-                            {
-                                label: "Edit",
-                                icon: missionPopUpIcons.editMission,
-                                onSelect: () => editMission(itemData.item.id)
-                            },
-                            {
-                                label: "Rename",
-                                icon: missionPopUpIcons.renameMission,
-                                onSelect: () => renameMission(itemData.item.id)
-                            },
-                            {
-                                label: "Delete",
-                                icon: missionPopUpIcons.deleteMission,
-                                onSelect: () => deleteMission(itemData.item.id)
-                            }
-                        ]}
+                        popUpOptions={missionPopUpOptions(itemData.item.id, openModal, closeModal, navigation, onDeletion)}
                     />
                 )}
                 style={{width: "100%"}}
