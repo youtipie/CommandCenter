@@ -18,6 +18,7 @@ import RenameModal from "../Modals/RenameModal";
 import Details from "../../screens/Details";
 import Observe from "../../screens/Observe";
 import MissionEditor from "../../screens/MissionEditor";
+import MissionDAO from "../../database/DAO/MissionDAO";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -48,10 +49,9 @@ const DrawerNavigation = () => {
                 headerRight: ({tintColor}) => (
                     <TouchableOpacity onPress={() => (
                         openModal(() => (
-                            // Add mission to db later...
                             <RenameModal
                                 onRename={(text) => (
-                                    console.log("New mission", text)
+                                    MissionDAO.addMission(text)
                                 )}
                             />
                         ))

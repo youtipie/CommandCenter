@@ -24,7 +24,7 @@ const Markers = ({
                     allowOverlap
                     draggable={isEditable}
                     onSelected={() => handleSelectWaypoint(index)}
-                    onDragEnd={(payload) => handleMarkerDragEnd(payload, index)}
+                    onDragEnd={(payload) => handleMarkerDragEnd(payload, waypoint)}
                 >
                     <FontAwesomeIcon
                         icon={faLocationDot}

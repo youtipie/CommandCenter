@@ -48,9 +48,12 @@ const Drones = () => {
                 }
                 renderItem={(itemData) => (
                     <Card
-                        item={itemData.item}
+                        title={itemData.item.title}
+                        description={`Status: ${itemData.item.description}`}
+                        icon={itemData.item.icon}
+                        color={itemData.item.color}
                         onPress={() => navigation.navigate("Details", {droneId: itemData.item.id})}
-                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, navigation, onDeletion)}
+                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, navigation)}
                     />
                 )}
                 style={{width: "100%"}}

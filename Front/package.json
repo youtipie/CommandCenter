@@ -13,6 +13,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-native-fontawesome": "^0.3.2",
+    "@nozbe/watermelondb": "^0.27.1",
     "@react-navigation/drawer": "^7.0.19",
     "@react-navigation/native": "^7.0.13",
     "@react-navigation/stack": "^7.0.18",
@@ -39,7 +40,8 @@
     "react-native-swipeable-item": "^2.0.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@babel/plugin-proposal-decorators": "^7.25.9"
   },
   "private": true
 }

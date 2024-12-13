@@ -1,11 +1,11 @@
-import {dronePopUpIcons, missionPopUpIcons} from "./styles";
+import {missionPopUpIcons} from "./styles";
 import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
 import SelectModal from "../components/Modals/SelectModal";
 import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 import {colors} from "./styles";
 
-export default (missionId, openModal, closeModal, navigation, onDeletion) => {
+export default (mission, openModal, closeModal, navigation) => {
     const startMission = () => {
         // Fetch later
         const options = [
@@ -26,7 +26,7 @@ export default (missionId, openModal, closeModal, navigation, onDeletion) => {
                     closeModal();
                     openModal(() => (
                         <PreflightCheckModal
-                            onStartMission={() => console.log(`Started mission${missionId} for drone${drone.id}`)}
+                            onStartMission={() => console.log(`Started mission${mission.id} for drone${drone.id}`)}
                         />
                     ));
                 }}
@@ -35,14 +35,14 @@ export default (missionId, openModal, closeModal, navigation, onDeletion) => {
     }
 
     const editMission = () => {
-        navigation.navigate("Mission", {missionId: missionId, editable: true});
+        navigation.navigate("Mission", {missionId: mission.id, editable: true});
     }
 
     const renameMission = () => {
         openModal(() => (
             <RenameModal
                 onRename={(text) => (
-                    console.log("rename", missionId, text)
+                    mission.changeTitle(text)
                 )}
             />
         ));
@@ -56,8 +56,8 @@ export default (missionId, openModal, closeModal, navigation, onDeletion) => {
                     buttonText="Confirm"
                     buttonColor={colors.error300}
                     onPress={
-                        () => {
-                            onDeletion?.(missionId);
+                        async () => {
+                            await mission.delete();
                             closeModal();
                         }
                     }
@@ -70,22 +70,22 @@ export default (missionId, openModal, closeModal, navigation, onDeletion) => {
         {
             label: "Start Mission",
             icon: missionPopUpIcons.startMission,
-            onSelect: () => startMission(missionId)
+            onSelect: () => startMission()
         },
         {
             label: "Edit",
             icon: missionPopUpIcons.editMission,
-            onSelect: () => editMission(missionId)
+            onSelect: () => editMission()
         },
         {
             label: "Rename",
             icon: missionPopUpIcons.renameMission,
-            onSelect: () => renameMission(missionId)
+            onSelect: () => renameMission()
         },
         {
             label: "Delete",
             icon: missionPopUpIcons.deleteMission,
-            onSelect: () => deleteMission(missionId)
+            onSelect: () => deleteMission()
         }
     ];
 }

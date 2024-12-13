@@ -4,15 +4,15 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {moderateScale} from "../utils/metrics";
 import PopUpMenu from "./PopUpMenu";
 
-const Card = ({item, onPress, popUpOptions}) => {
+const Card = ({title, description, icon, color, onPress, popUpOptions}) => {
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <View style={styles.iconContainer}>
-                <FontAwesomeIcon icon={item.icon} color={item.color} size={moderateScale(64)}/>
+                <FontAwesomeIcon icon={icon} color={color} size={moderateScale(64)}/>
             </View>
             <View style={styles.detailsContainer}>
                 <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{item.title}</Text>
+                    <Text style={styles.title}>{title}</Text>
                     <PopUpMenu options={popUpOptions}>
                         <FontAwesomeIcon
                             icon={commonIcons.dotsVertical}
@@ -21,7 +21,7 @@ const Card = ({item, onPress, popUpOptions}) => {
                         />
                     </PopUpMenu>
                 </View>
-                <Text style={styles.description}>Status: {item.description}</Text>
+                <Text style={styles.description}>{description}</Text>
             </View>
         </TouchableOpacity>
     );

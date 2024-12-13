@@ -10,15 +10,18 @@ import {useNavigation} from "@react-navigation/native";
 import DroneMarker from "./components/DroneMarker";
 import MarkerLines from "./components/MarkerLines";
 import Markers from "./components/Markers";
-import {notDisplayedCommands} from "../../constants/commands";
+import {compose, withObservables} from "@nozbe/watermelondb/react";
+import MissionDAO from "../../database/DAO/MissionDAO";
+import WaypointDAO from "../../database/DAO/WaypointDAO";
 
 const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
 
 
 const Map = ({
                  children,
+                 mission,
                  waypoints,
-                 onWaypointsChange = null,
+                 waypointsWithCoordinates,
                  droneId = null,
                  droneData = null,
                  isEditable = false,
@@ -31,13 +34,11 @@ const Map = ({
     const [time, setTime] = useState(null);
     const [startPosition, setStartPosition] = useState(null);
 
+    const [, forceUpdate] = useState(null);
+
     const [headerShown, setHeaderShown] = useState(true);
     const [styleURL, setStyleURL] = useState(styleURLs[styleURLs.length - 1]);
     const [selectedWaypoint, setSelectedWaypoint] = useState();
-
-    const waypointsWithCoordinates = waypoints.filter(waypoint => (
-        !notDisplayedCommands.includes(waypoint.command)
-    ));
 
     const centerCamera = useRef(droneData ? [droneData.lon, droneData.lat] : waypointsWithCoordinates[0] ? [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x] : undefined);
 
@@ -79,27 +80,18 @@ const Map = ({
             const duration = timeStamp - time;
 
             if (duration > 1000 && startPosition) {
-                handleLongPress(await mapRef.current?.getCoordinateFromView([nativeEvent.pageX, nativeEvent.pageY]));
+                await handleLongPress(await mapRef.current?.getCoordinateFromView([nativeEvent.pageX, nativeEvent.pageY]));
             }
         }
         setTime(null);
         setStartPosition(null);
     }
 
-    const handleLongPress = (coordinates) => {
+    const handleLongPress = async (coordinates) => {
         if (isEditable) {
             const [lon, lat] = coordinates;
-            const waypoint = {
-                command: 16,
-                param1: 0,
-                param2: 0,
-                param3: 0,
-                param4: 0,
-                x: lat,
-                y: lon,
-                z: 50
-            };
-            onWaypointsChange?.(prev => [...prev, waypoint]);
+            const order = await (WaypointDAO.getHighestOrder(mission)) + 1;
+            await WaypointDAO.addWaypoint(mission, 16, 0, 0, 0, 0, lat, lon, 50, order);
         }
     }
 
@@ -108,10 +100,10 @@ const Map = ({
         setSelectedWaypoint(waypoints.indexOf(marker));
     }
 
-    const handleMarkerDragEnd = (payload, index) => {
+    const handleMarkerDragEnd = async (payload, waypoint) => {
         const {coordinates} = payload.geometry;
-        const marker = waypointsWithCoordinates[index];
-        onDragEnd?.(coordinates.reverse(), waypoints.indexOf(marker));
+        await onDragEnd?.(coordinates.reverse(), waypoint);
+        forceUpdate(Date.now());
     }
 
     useEffect(() => {
@@ -186,14 +178,23 @@ const Map = ({
                     isEditing={isEditable}
                     selectedIndex={selectedWaypoint}
                     onSelectedIndex={setSelectedWaypoint}
-                    onWaypointsChange={onWaypointsChange}
                 />
             </View>
         </View>
     );
 };
 
-export default Map;
+const enhance = compose(
+    withObservables(["missionId"], ({missionId}) => ({
+        mission: MissionDAO.observeById(missionId),
+        waypoints: WaypointDAO.observeWaypointsByOrder(missionId),
+    })),
+    withObservables(["mission"], ({mission}) => ({
+        waypointsWithCoordinates: mission.waypointsWithCoordinates.observe()
+    }))
+);
+
+export default enhance(Map);
 
 const styles = StyleSheet.create({
     root: {

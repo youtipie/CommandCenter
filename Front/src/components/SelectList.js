@@ -1,6 +1,6 @@
 import {ScrollView, Text} from "react-native";
 import PopUpMenu from "./PopUpMenu";
-import {MenuOption, renderers} from "react-native-popup-menu";
+import {MenuOption} from "react-native-popup-menu";
 import {verticalScale} from "../utils/metrics";
 
 const SelectList = ({disabled, options, onSelect, textStyle, children}) => {

@@ -23,14 +23,13 @@ const createGeoJSONCircle = (center, radiusInMeters, points = 64) => {
         },
     };
 
-    const earthRadius = 6371000; // Earth's radius in meters
+    const earthRadius = 6371000;
 
     for (let i = 0; i <= points; i++) {
-        const angle = (i / points) * (2 * Math.PI); // Divide circle into points
+        const angle = (i / points) * (2 * Math.PI);
         const dx = radiusInMeters * Math.cos(angle);
         const dy = radiusInMeters * Math.sin(angle);
 
-        // Convert meter offsets to degrees
         const latitude = center[1] + (dy / earthRadius) * (180 / Math.PI);
         const longitude =
             center[0] +
@@ -58,61 +57,64 @@ const MarkerLines = ({waypointsWithCoordinates}) => {
         .map(waypoint => createGeoJSONCircle([waypoint.y, waypoint.x], waypoint.param3));
 
     return (
-        waypointsWithCoordinates.length > 1 &&
         <>
-            <MapboxGL.Images
-                images={{
-                    arrow: require("../../../../assets/arrow.png")
-                }}
-            />
-            <MapboxGL.ShapeSource
-                id="markersLineSource"
-                shape={{
-                    type: "Feature",
-                    geometry: {
-                        type: "LineString",
-                        coordinates: lineCoordinates,
-                    },
-                }}
-            >
-                <MapboxGL.LineLayer
-                    id="markersLineLayer"
-                    style={{
-                        lineColor: colors.error200,
-                        lineWidth: 4,
-                    }}
-                    layerIndex={100}
-                />
-            </MapboxGL.ShapeSource>
-            <MapboxGL.ShapeSource
-                id="arrowsSource"
-                shape={{
-                    type: 'FeatureCollection',
-                    features: midpointsAndAngles.map(({midpoint, angle}, index) => ({
-                        type: 'Feature',
-                        properties: {
-                            rotation: angle,
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: midpoint,
-                        },
-                    })),
-                }}
-            >
-                <MapboxGL.SymbolLayer
-                    id="arrowsLayer"
-                    style={{
-                        iconImage: 'arrow',
-                        iconSize: 0.07,
-                        iconRotate: ['get', 'rotation'],
-                        iconColor: colors.error200,
-                        iconAllowOverlap: true,
-                        iconIgnorePlacement: true,
-                    }}
-                    minZoomLevel={0}
-                />
-            </MapboxGL.ShapeSource>
+            {waypointsWithCoordinates.length > 1 && (
+                <>
+                    <MapboxGL.Images
+                        images={{
+                            arrow: require("../../../../assets/arrow.png")
+                        }}
+                    />
+                    <MapboxGL.ShapeSource
+                        id="markersLineSource"
+                        shape={{
+                            type: "Feature",
+                            geometry: {
+                                type: "LineString",
+                                coordinates: lineCoordinates,
+                            },
+                        }}
+                    >
+                        <MapboxGL.LineLayer
+                            id="markersLineLayer"
+                            style={{
+                                lineColor: colors.error200,
+                                lineWidth: 4,
+                            }}
+                            layerIndex={100}
+                        />
+                    </MapboxGL.ShapeSource>
+                    <MapboxGL.ShapeSource
+                        id="arrowsSource"
+                        shape={{
+                            type: 'FeatureCollection',
+                            features: midpointsAndAngles.map(({midpoint, angle}, index) => ({
+                                type: 'Feature',
+                                properties: {
+                                    rotation: angle,
+                                },
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: midpoint,
+                                },
+                            })),
+                        }}
+                    >
+                        <MapboxGL.SymbolLayer
+                            id="arrowsLayer"
+                            style={{
+                                iconImage: 'arrow',
+                                iconSize: 0.07,
+                                iconRotate: ['get', 'rotation'],
+                                iconColor: colors.error200,
+                                iconAllowOverlap: true,
+                                iconIgnorePlacement: true,
+                            }}
+                            minZoomLevel={0}
+                        />
+                    </MapboxGL.ShapeSource>
+                </>
+            )}
             {circlesData.length > 0 && (
                 <MapboxGL.ShapeSource
                     id="circlesSource"
