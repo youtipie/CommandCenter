@@ -1,18 +1,5 @@
 import MapboxGL from "@rnmapbox/maps";
-import getMidpoint from "../../../utils/getMidpoint";
 import {colors} from "../../../constants/styles";
-import getBearing from "../../../utils/getBearing";
-
-const calculateMidpointsAndAngles = (coordinates) => {
-    return coordinates.slice(0, -1).map((start, index) => {
-        const end = coordinates[index + 1];
-
-        const [midLon, midLat] = getMidpoint(start[1], start[0], end[1], end[0]);
-        const angle = getBearing(start[1], start[0], end[1], end[0]);
-
-        return {midpoint: [midLon, midLat], angle};
-    });
-};
 
 const createGeoJSONCircle = (center, radiusInMeters, points = 64) => {
     const coords = {
@@ -50,8 +37,6 @@ const MarkerLines = ({waypointsWithCoordinates}) => {
             waypoint.x,
         ]);
 
-    const midpointsAndAngles = calculateMidpointsAndAngles(lineCoordinates);
-
     const circlesData = waypointsWithCoordinates
         .filter(waypoint => waypoint.command === 18)
         .map(waypoint => createGeoJSONCircle([waypoint.y, waypoint.x], waypoint.param3));
@@ -83,34 +68,18 @@ const MarkerLines = ({waypointsWithCoordinates}) => {
                             }}
                             layerIndex={100}
                         />
-                    </MapboxGL.ShapeSource>
-                    <MapboxGL.ShapeSource
-                        id="arrowsSource"
-                        shape={{
-                            type: 'FeatureCollection',
-                            features: midpointsAndAngles.map(({midpoint, angle}, index) => ({
-                                type: 'Feature',
-                                properties: {
-                                    rotation: angle,
-                                },
-                                geometry: {
-                                    type: 'Point',
-                                    coordinates: midpoint,
-                                },
-                            })),
-                        }}
-                    >
                         <MapboxGL.SymbolLayer
-                            id="arrowsLayer"
+                            id="lineDirectionSymbols"
                             style={{
-                                iconImage: 'arrow',
+                                iconImage: "arrow",
                                 iconSize: 0.07,
-                                iconRotate: ['get', 'rotation'],
+                                symbolPlacement: "line",
+                                symbolSpacing: 5,
+                                iconRotate: 90,
                                 iconColor: colors.error200,
                                 iconAllowOverlap: true,
                                 iconIgnorePlacement: true,
                             }}
-                            minZoomLevel={0}
                         />
                     </MapboxGL.ShapeSource>
                 </>

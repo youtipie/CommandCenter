@@ -118,12 +118,6 @@ const Map = ({
         }
     }, []);
 
-    useEffect(() => {
-        if (cameraRef.current) {
-            console.log(cameraRef.current);
-        }
-    }, [cameraRef]);
-
     return (
         <View style={styles.root}>
             <View style={styles.map}>
@@ -144,7 +138,7 @@ const Map = ({
                 >
                     <MapboxGL.Camera
                         ref={cameraRef}
-                        // zoomLevel={15} causes symbol layer to disappear
+                        zoomLevel={15}
                         centerCoordinate={centerCamera.current}
                         animationDuration={0}
                     />

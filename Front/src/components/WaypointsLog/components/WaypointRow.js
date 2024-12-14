@@ -24,7 +24,7 @@ const WaypointRow = ({
                          onCommandChange
                      }) => {
     const prevWp = waypoints[index - 1];
-    const dist = prevWp ? (getDistance(waypoint.x, waypoint.y, prevWp.x, prevWp.y) * 1000).toFixed(4) : 0;
+    const dist = prevWp ? (getDistance(waypoint.x, waypoint.y, prevWp.x, prevWp.y) * 1000).toFixed(0) : 0;
 
     return (
         <SwipeableItem
