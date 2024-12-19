@@ -5,16 +5,15 @@ import {timestampToDateStr} from "../../../utils/timestampToDateStr";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import PopUpMenu from "../../../components/PopUpMenu";
 
-const MissionCard = ({missionId, title, description, timestamp, onPress, popUpOptions}) => {
+const MissionCard = ({missionId, title, timestamp, onPress, popUpOptions}) => {
     return (
         <TouchableOpacity onPress={onPress} style={styles.card}>
-            <Text style={styles.date}>{timestampToDateStr(timestamp)}</Text>
             <View style={styles.indexContainer}>
                 <Text style={styles.index}>№{missionId}</Text>
             </View>
             <View style={styles.contentContainer}>
                 <Text style={styles.contentText}>{title}</Text>
-                <Text style={styles.contentText}>{description}</Text>
+                <Text style={styles.contentText}>{timestampToDateStr(timestamp)}</Text>
             </View>
             <View style={styles.optionContainer}>
                 <PopUpMenu options={popUpOptions}>

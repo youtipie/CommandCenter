@@ -1,5 +1,6 @@
 import threading
 import time
+from datetime import datetime
 
 from flask import Flask
 from typing import Dict
@@ -17,11 +18,15 @@ INACTIVITY_TIMEOUT = 300
 
 def cleanup_inactive_drones():
     while True:
-        time.sleep(60)
-        inactive_drones = [
+        time.sleep(5)
+        inactive_drones = set(
             conn for conn, drone in active_drones.items()
             if drone.is_inactive(INACTIVITY_TIMEOUT)
-        ]
+        )
+        for conn, drone in active_drones.items():
+            monotonic_time = time.monotonic()
+            if monotonic_time - drone.vehicle._heartbeat_lastreceived >= 5:
+                inactive_drones.add(conn)
         for conn in inactive_drones:
             print(f"Closing inactive drone connection: {conn}")
             try:

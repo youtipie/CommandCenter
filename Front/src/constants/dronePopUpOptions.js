@@ -1,33 +1,18 @@
 import {dronePopUpIcons} from "./styles";
 import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
-import SelectModal from "../components/Modals/SelectModal";
-import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 import {colors} from "./styles";
+import startMissionBase from "../utils/startMissionBase";
+import ErrorModal from "../components/Modals/ErrorModal";
+import axios from "axios";
+import {SERVER_URL} from "../services/socket";
 
-export default (droneId, openModal, closeModal, navigation, onDeletion) => {
-    const startMission = () => {
-        const options = [
-            {id: 10, label: "Mission 1"},
-            {id: 11, label: "Very long mission name so it wont fit, right?"}
-        ];
-        openModal(() => (
-            <SelectModal
-                title="Select mission"
-                options={options}
-                onSelect={(mission) => {
-                    closeModal();
-                    openModal(() => (
-                        <PreflightCheckModal
-                            onStartMission={() => console.log(`Started mission ${mission.id} for drone ${droneId}`)}
-                        />
-                    ));
-                }}
-            />
-        ));
+export default (drone, droneData, openModal, closeModal, navigation) => {
+    const startMission = async () => {
+        startMissionBase("mission", openModal, closeModal, drone, droneData, null);
     };
 
-    const observeDrone = () => navigation.navigate("Observe", {droneId});
+    const observeDrone = () => navigation.navigate("Observe", {droneId: drone.id});
 
     const RTL = () => {
         openModal(() => (
@@ -36,20 +21,28 @@ export default (droneId, openModal, closeModal, navigation, onDeletion) => {
                 content="Drone won't be able to continue its mission."
                 buttonText="Confirm"
                 buttonColor={colors.error300}
-                onPress={() => {
-                    console.log("RTL", droneId);
+                onPress={async () => {
+                    try {
+                        await axios.post(SERVER_URL + "/drone/rtl", {
+                            "connection_string": drone.uri
+                        });
+                    } catch (e) {
+                        openModal(() => <ErrorModal/>);
+                    }
                     closeModal();
                 }}
             />
         ));
     };
 
-    const guidedControl = () => console.log("guidedControl", droneId);
+    const guidedControl = () => console.log("guidedControl", drone.id);
 
     const renameDrone = () => {
         openModal(() => (
             <RenameModal
-                onRename={(text) => console.log("rename", droneId, text)}
+                onRename={(text) => (
+                    drone.changeTitle(text)
+                )}
             />
         ));
     };
@@ -61,8 +54,9 @@ export default (droneId, openModal, closeModal, navigation, onDeletion) => {
                 content="This action cannot be undone!"
                 buttonText="Confirm"
                 buttonColor={colors.error300}
-                onPress={() => {
-                    onDeletion(droneId);
+                onPress={async () => {
+                    await drone.delete();
+                    navigation.navigate("Drawer", {screen: "Drones"});
                     closeModal();
                 }}
             />
@@ -73,32 +67,32 @@ export default (droneId, openModal, closeModal, navigation, onDeletion) => {
         {
             label: "Start Mission",
             icon: dronePopUpIcons.startMission,
-            onSelect: () => startMission(droneId)
+            onSelect: startMission
         },
         {
             label: "Observe",
             icon: dronePopUpIcons.observeDrone,
-            onSelect: () => observeDrone(droneId)
+            onSelect: observeDrone
         },
         {
             label: "RTL",
             icon: dronePopUpIcons.RTL,
-            onSelect: () => RTL(droneId)
+            onSelect: RTL
         },
-        {
-            label: "Guided Control",
-            icon: dronePopUpIcons.guidedControl,
-            onSelect: () => guidedControl(droneId)
-        },
+        // {
+        //     label: "Guided Control",
+        //     icon: dronePopUpIcons.guidedControl,
+        //     onSelect: guidedControl
+        // },
         {
             label: "Rename",
             icon: dronePopUpIcons.renameDrone,
-            onSelect: () => renameDrone(droneId)
+            onSelect: renameDrone
         },
         {
             label: "Delete",
             icon: dronePopUpIcons.deleteDrone,
-            onSelect: () => deleteDrone(droneId)
+            onSelect: deleteDrone
         }
     ];
 }

@@ -1,35 +1,41 @@
 import {colors} from "../../../constants/styles";
 import {View, StyleSheet} from "react-native";
 import Modal from "../Modal";
-import {useState} from "react";
 import Section from "./components/Section";
-import {useModal} from "../ModalProvider";
+import {useModal} from "../../SocketModalProvider";
+import useDroneData from "../../../hooks/useDroneData";
 
-const PreflightCheckModal = ({onStartMission}) => {
+const PreflightCheckModal = ({drone, droneData, onStartMission}) => {
     const {openModal, closeModal} = useModal();
 
-    // Fetch later...
-    const [stats, setStats] = useState([
+    if (!droneData) {
+        droneData = useDroneData({
+            connectionString: drone.uri,
+            verbose: true
+        });
+    }
+
+    const stats = [
         {
             label: "GPS status",
             expected: 3,
-            actual: 6,
+            actual: droneData?.gps.fix_type,
         },
         {
             label: "GPS SAT count",
             expected: 10,
-            actual: 12,
+            actual: droneData?.gps.satellites_visible,
         },
         {
             label: "Telemetry status",
             expected: 95,
-            actual: 100,
+            actual: droneData?.link_quality,
             sign: "%"
         },
         {
             label: "Battery power",
-            expected: 20,
-            actual: 12.5,
+            expected: 10,
+            actual: droneData?.battery.voltage,
             sign: "V"
         },
         {
@@ -44,7 +50,7 @@ const PreflightCheckModal = ({onStartMission}) => {
         {
             label: "Camera is on and ready to fly?",
         }
-    ]);
+    ];
 
     const canProceed = !stats.some(
         (stat) => stat.actual !== undefined && stat.expected !== undefined && stat.actual < stat.expected
@@ -72,6 +78,7 @@ const PreflightCheckModal = ({onStartMission}) => {
     }
 
     return (
+        droneData &&
         <Modal
             title="Preflight Check"
             buttonColor={colors.accent400}

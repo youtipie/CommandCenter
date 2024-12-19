@@ -2,39 +2,42 @@ import {View, StyleSheet, FlatList, Text} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import Card from "../components/Card";
 import {moderateScale} from "../utils/metrics";
-import {useModal} from "../components/Modals/ModalProvider";
-import {useState} from "react";
-import {useNavigation} from "@react-navigation/native";
+import {useModal} from "../components/SocketModalProvider";
 import {statuses} from "../constants/statuses";
 import dronePopUpOptions from "../constants/dronePopUpOptions";
+import {withObservables} from "@nozbe/watermelondb/react";
+import DroneDAO from "../database/DAO/DroneDAO";
+import useDroneData from "../hooks/useDroneData";
+import {useNavigation} from "@react-navigation/native";
 
 
-const Drones = () => {
-    const {openModal, closeModal} = useModal();
+const RenderDroneCard = ({item}) => {
     const navigation = useNavigation();
+    const {openModal, closeModal} = useModal();
 
-    const [drones, setDrones] = useState([
-        {
-            id: 10,
-            title: "DJi mavick pro 15",
-            ...statuses["1"]
-        },
-        {
-            id: 11,
-            title: "DJi mavick pro 15",
-            ...statuses["2"]
-        },
-        {
-            id: 12,
-            title: "DJi mavick pro 15",
-            ...statuses["3"]
-        }
-    ]);
+    const droneData = useDroneData({
+        connectionString: item.uri,
+        verbose: false
+    });
 
-    const onDeletion = (droneId) => {
-        setDrones(drones.filter(drone => drone.id !== droneId));
-    }
+    const status = droneData ?
+        droneData.have_mission && !droneData.is_mission_finished && droneData.mode === "AUTO" ? statuses["1"] : statuses["2"]
+        : statuses["3"];
 
+    return (
+        <Card
+            key={droneData?.system_status}
+            title={item.title}
+            description={`Status: ${status.description}`}
+            icon={status.icon}
+            color={status.color}
+            onPress={() => navigation.navigate("Details", {droneId: item.id})}
+            popUpOptions={dronePopUpOptions(item, null, openModal, closeModal, navigation)}
+        />
+    );
+}
+
+const Drones = ({drones}) => {
     return (
         <View style={styles.root}>
             <FlatList
@@ -46,23 +49,18 @@ const Drones = () => {
                         <Text style={styles.emptyText}>There is nothing here...</Text>
                     </View>
                 }
-                renderItem={(itemData) => (
-                    <Card
-                        title={itemData.item.title}
-                        description={`Status: ${itemData.item.description}`}
-                        icon={itemData.item.icon}
-                        color={itemData.item.color}
-                        onPress={() => navigation.navigate("Details", {droneId: itemData.item.id})}
-                        popUpOptions={dronePopUpOptions(itemData.item.id, openModal, closeModal, navigation)}
-                    />
-                )}
+                renderItem={({item}) => <RenderDroneCard item={item}/>}
                 style={{width: "100%"}}
             />
         </View>
     );
 };
 
-export default Drones;
+const enhance = withObservables([], () => ({
+    drones: DroneDAO.observeDrones(),
+}));
+
+export default enhance(Drones);
 
 const styles = StyleSheet.create({
     root: {

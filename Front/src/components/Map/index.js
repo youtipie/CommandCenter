@@ -17,16 +17,16 @@ import WaypointDAO from "../../database/DAO/WaypointDAO";
 const styleURLs = [MapboxGL.StyleURL.Satellite, MapboxGL.StyleURL.SatelliteStreet, MapboxGL.StyleURL.Outdoors, MapboxGL.StyleURL.Street];
 
 
-const Map = ({
-                 children,
-                 mission,
-                 waypoints,
-                 waypointsWithCoordinates,
-                 droneId = null,
-                 droneData = null,
-                 isEditable = false,
-                 onDragEnd = null
-             }) => {
+export const Map = ({
+                        children,
+                        mission,
+                        waypoints,
+                        waypointsWithCoordinates,
+                        drone = null,
+                        droneData = null,
+                        isEditable = false,
+                        onDragEnd = null
+                    }) => {
     const cameraRef = useRef();
     const mapRef = useRef();
     const navigation = useNavigation();
@@ -40,7 +40,7 @@ const Map = ({
     const [styleURL, setStyleURL] = useState(styleURLs[styleURLs.length - 1]);
     const [selectedWaypoint, setSelectedWaypoint] = useState();
 
-    const centerCamera = useRef(droneData ? [droneData.lon, droneData.lat] : waypointsWithCoordinates[0] ? [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x] : undefined);
+    const centerCamera = useRef(droneData ? [droneData.location.lon, droneData.location.lat] : waypointsWithCoordinates[0] ? [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x] : undefined);
 
     const handlePress = () => {
         if (selectedWaypoint !== null && selectedWaypoint !== undefined) {
@@ -138,7 +138,7 @@ const Map = ({
                 >
                     <MapboxGL.Camera
                         ref={cameraRef}
-                        zoomLevel={15}
+                        zoomLevel={centerCamera.current ? 15 : 3}
                         centerCoordinate={centerCamera.current}
                         animationDuration={0}
                     />
@@ -157,7 +157,7 @@ const Map = ({
                 </MapboxGL.MapView>
                 <View style={styles.overlayContainer}>
                     <OverlayButtons
-                        droneId={droneId ?? null}
+                        drone={drone ?? null}
                         cameraRef={cameraRef}
                         onStyleURLChange={setStyleURL}
                         styleURLs={styleURLs}

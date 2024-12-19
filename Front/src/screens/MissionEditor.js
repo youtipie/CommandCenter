@@ -7,9 +7,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {horizontalScale, moderateScale} from "../utils/metrics";
 import PopUpMenu from "../components/PopUpMenu";
 import missionPopUpOptions from "../constants/missionPopUpOptions";
-import {useModal} from "../components/Modals/ModalProvider";
 import {withObservables} from "@nozbe/watermelondb/react";
 import MissionDAO from "../database/DAO/MissionDAO";
+import {useModal} from "../components/SocketModalProvider";
 
 
 const MissionEditor = ({navigation, route, mission, waypoints, waypointsWithCoordinates}) => {

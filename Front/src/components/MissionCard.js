@@ -2,10 +2,9 @@ import {withObservables} from "@nozbe/watermelondb/react";
 import missionPopUpOptions from "../constants/missionPopUpOptions";
 import Card from "./Card";
 import {colors, commonIcons} from "../constants/styles";
-import {useModal} from "./Modals/ModalProvider";
 import {useNavigation} from "@react-navigation/native";
 import {useEffect, useState} from "react";
-import getDistance from "../utils/getDistance";
+import {useModal} from "./SocketModalProvider";
 
 const missionStyle = {
     color: colors.secondaryText100,
@@ -19,12 +18,7 @@ const MissionCard = ({mission, waypointsCount}) => {
 
     useEffect(() => {
         (async () => {
-            let distance = 0;
-            const waypoints = await mission.waypointsWithCoordinates.fetch();
-            for (let i = 0; i < waypoints.length - 1; i++) {
-                distance += getDistance(waypoints[i].x, waypoints[i].y, waypoints[i + 1].x, waypoints[i + 1].y);
-            }
-            setDistance(distance.toFixed(2));
+            setDistance((await mission.getDistance()).toFixed(2))
         })()
     }, [waypointsCount]);
 

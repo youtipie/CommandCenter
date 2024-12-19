@@ -1,5 +1,5 @@
-import {Model} from '@nozbe/watermelondb'
-import {field, immutableRelation} from "@nozbe/watermelondb/decorators";
+import {Model, Q} from '@nozbe/watermelondb'
+import {field, relation, writer} from "@nozbe/watermelondb/decorators";
 
 export default class HistoryMission extends Model {
     static table = "history_missions";
@@ -9,6 +9,12 @@ export default class HistoryMission extends Model {
     }
 
     @field("timestamp") timestamp
-    @immutableRelation("missions", "mission_id") mission
-    @immutableRelation("drones", "drone_id") drone
+    @relation("missions", "mission_id") mission
+    @relation("drones", "drone_id") drone
+
+    @writer
+    async delete() {
+        await this.destroyPermanently();
+        return true;
+    }
 }

@@ -9,42 +9,44 @@ import {colors} from "../../../constants/styles";
 const DroneMarker = ({droneData, waypointsWithCoordinates}) => {
     return (
         <>
-            <MapboxGL.ShapeSource
-                id="dottedLineSource"
-                shape={{
-                    type: "Feature",
-                    geometry: {
-                        type: "LineString",
-                        coordinates: [
-                            [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x],
-                            [droneData.homeLocation.log, droneData.homeLocation.lat],
-                            [waypointsWithCoordinates[waypointsWithCoordinates.length - 1].y, waypointsWithCoordinates[waypointsWithCoordinates.length - 1].x],
-                        ],
-                    },
-                }}
-            >
-                <MapboxGL.LineLayer
-                    id="dottedLineLayer"
-                    style={{
-                        lineColor: colors.error200,
-                        lineWidth: 4,
-                        lineDasharray: [2, 4],
+            {waypointsWithCoordinates.length > 0 &&
+                <MapboxGL.ShapeSource
+                    id="dottedLineSource"
+                    shape={{
+                        type: "Feature",
+                        geometry: {
+                            type: "LineString",
+                            coordinates: [
+                                [waypointsWithCoordinates[0].y, waypointsWithCoordinates[0].x],
+                                [droneData.home_location.log, droneData.home_location.lat],
+                                [waypointsWithCoordinates[waypointsWithCoordinates.length - 1].y, waypointsWithCoordinates[waypointsWithCoordinates.length - 1].x],
+                            ],
+                        },
                     }}
-                />
-            </MapboxGL.ShapeSource>
+                >
+                    <MapboxGL.LineLayer
+                        id="dottedLineLayer"
+                        style={{
+                            lineColor: colors.error200,
+                            lineWidth: 4,
+                            lineDasharray: [2, 4],
+                        }}
+                    />
+                </MapboxGL.ShapeSource>
+            }
             <MapboxGL.MarkerView
-                coordinate={[droneData.lon, droneData.lat]}
+                coordinate={[droneData.location.lon, droneData.location.lat]}
                 allowOverlap
             >
                 <Image source={droneImg}
                        style={{
                            width: moderateScale(70),
                            height: moderateScale(70),
-                           transform: [{rotate: `${droneData.bearing}deg`}]
+                           transform: [{rotate: `${droneData.heading}deg`}]
                        }}/>
             </MapboxGL.MarkerView>
             <MapboxGL.MarkerView
-                coordinate={[droneData.homeLocation.log, droneData.homeLocation.lat]}
+                coordinate={[droneData.home_location.log, droneData.home_location.lat]}
                 allowOverlap
             >
                 <FontAwesomeIcon

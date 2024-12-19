@@ -1,5 +1,5 @@
 import {Model, Q} from '@nozbe/watermelondb'
-import {children, lazy, text, writer} from "@nozbe/watermelondb/decorators";
+import {children, lazy, reader, text, writer} from "@nozbe/watermelondb/decorators";
 import getDistance from "../../utils/getDistance";
 import {notDisplayedCommands} from "../../constants/commands";
 
@@ -27,6 +27,16 @@ export default class Mission extends Model {
         .get('drones')
         .query(Q.on('history_missions', 'mission_id', this.id));
 
+    @reader
+    async getDistance() {
+        let distance = 0;
+        const waypoints = await this.waypointsWithCoordinates.fetch();
+        for (let i = 0; i < waypoints.length - 1; i++) {
+            distance += getDistance(waypoints[i].x, waypoints[i].y, waypoints[i + 1].x, waypoints[i + 1].y);
+        }
+        return distance;
+    }
+
     @writer
     async changeTitle(title) {
         await this.update(mission => {
@@ -36,7 +46,7 @@ export default class Mission extends Model {
 
     @writer
     async delete() {
-        const historyMissions = await this.collections.get("history_missions").query(Q.where("mission_id", this.id));
+        const historyMissions =  this.collections.get("history_missions").query(Q.where("mission_id", this.id));
         await historyMissions.destroyAllPermanently?.();
         await this.waypoints.destroyAllPermanently();
         await this.destroyPermanently();

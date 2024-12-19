@@ -1,5 +1,5 @@
 import {Model, Q} from '@nozbe/watermelondb'
-import {lazy, text, writer} from "@nozbe/watermelondb/decorators";
+import {lazy, reader, text, writer} from "@nozbe/watermelondb/decorators";
 
 export default class Drone extends Model {
     static table = "drones";
@@ -15,16 +15,25 @@ export default class Drone extends Model {
         .get('missions')
         .query(Q.on('history_missions', 'drone_id', this.id));
 
+    @reader
+    async getLastMission() {
+        const missions = await this.missions.fetch();
+        if (missions.length > 0) {
+            return missions[missions.length - 1];
+        }
+        return null;
+    }
+
     @writer
     async changeTitle(title) {
-        await this.update(folder => {
-            folder.title = title
+        await this.update(drone => {
+            drone.title = title
         })
     }
 
     @writer
     async delete() {
-        const historyMissions = await this.collections.get("history_missions").query(Q.where("drone_id", this.id));
+        const historyMissions = this.collections.get("history_missions").query(Q.where("drone_id", this.id));
         await historyMissions.destroyAllPermanently?.();
         await this.destroyPermanently();
         return true;

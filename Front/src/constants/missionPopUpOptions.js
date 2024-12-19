@@ -1,37 +1,12 @@
 import {missionPopUpIcons} from "./styles";
 import Modal from "../components/Modals/Modal";
 import RenameModal from "../components/Modals/RenameModal";
-import SelectModal from "../components/Modals/SelectModal";
-import PreflightCheckModal from "../components/Modals/PreflightCheckModal";
 import {colors} from "./styles";
+import startMissionBase from "../utils/startMissionBase";
 
 export default (mission, openModal, closeModal, navigation) => {
-    const startMission = () => {
-        // Fetch later
-        const options = [
-            {
-                id: 10,
-                label: "Mavick 14"
-            },
-            {
-                id: 11,
-                label: "Mavick 15"
-            }
-        ];
-        openModal(() => (
-            <SelectModal
-                title="Select drone"
-                options={options}
-                onSelect={(drone) => {
-                    closeModal();
-                    openModal(() => (
-                        <PreflightCheckModal
-                            onStartMission={() => console.log(`Started mission${mission.id} for drone${drone.id}`)}
-                        />
-                    ));
-                }}
-            />
-        ));
+    const startMission = async () => {
+        startMissionBase("drone", openModal, closeModal, null, null, mission);
     }
 
     const editMission = () => {
@@ -70,22 +45,22 @@ export default (mission, openModal, closeModal, navigation) => {
         {
             label: "Start Mission",
             icon: missionPopUpIcons.startMission,
-            onSelect: () => startMission()
+            onSelect: startMission
         },
         {
             label: "Edit",
             icon: missionPopUpIcons.editMission,
-            onSelect: () => editMission()
+            onSelect: editMission
         },
         {
             label: "Rename",
             icon: missionPopUpIcons.renameMission,
-            onSelect: () => renameMission()
+            onSelect: renameMission
         },
         {
             label: "Delete",
             icon: missionPopUpIcons.deleteMission,
-            onSelect: () => deleteMission()
+            onSelect: deleteMission
         }
     ];
 }

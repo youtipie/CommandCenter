@@ -1,13 +1,19 @@
 import {useState} from "react";
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {colors, commonIcons, fonts} from "../constants/styles";
 import {moderateScale, verticalScale} from "../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import InputWithErrors from "../components/InputWithErrors";
 import {useNavigation} from "@react-navigation/native";
+import ErrorModal from "../components/Modals/ErrorModal";
+import DroneDAO from "../database/DAO/DroneDAO";
+import {useModal, useSocket} from "../components/SocketModalProvider";
+import {connectDrone} from "../services/api";
 
 const AddDrone = () => {
     const navigation = useNavigation();
+    const {openModal} = useModal();
+    const {setLoadingMessage} = useSocket();
 
     const [form, setForm] = useState({
         name: "",
@@ -47,7 +53,7 @@ const AddDrone = () => {
         return "Port must be in range [1; 65535]!"
     }
 
-    const validateForm = () => {
+    const validateForm = async () => {
         let formErrors = {};
         if (!form.name) {
             formErrors.name = "This field cannot be empty!";
@@ -60,15 +66,28 @@ const AddDrone = () => {
         if (portValidation !== true) {
             formErrors.port = portValidation;
         }
+        if (!await DroneDAO.checkConnectionStringUniqueness(`tcp:${form.ip}:${form.port}`)) {
+            formErrors.ip = "Drone with such ip and port already exists!";
+        }
         setErrors(formErrors);
         return Object.keys(formErrors).length === 0;
     }
 
-    const handleAddButton = () => {
-        if (!validateForm()) {
+    const handleAddButton = async () => {
+        if (!await validateForm()) {
             return;
         }
-        console.log("Added drone!");
+        const connectionString = `tcp:${form.ip}:${form.port}`;
+
+        setLoadingMessage("Checking the connection...");
+        const isSuccessful = await connectDrone(connectionString);
+        setLoadingMessage(null);
+        if (!isSuccessful) {
+            openModal(() => <ErrorModal/>);
+            return;
+        }
+
+        await DroneDAO.addDrone(form.name, connectionString);
         navigation.navigate("Drawer", {screen: "Drones"});
     }
 

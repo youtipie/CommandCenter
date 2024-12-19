@@ -11,7 +11,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {TouchableOpacity, View} from "react-native";
 import About from "../../screens/About";
 import {MenuProvider} from "react-native-popup-menu";
-import ModalProvider, {useModal} from "../Modals/ModalProvider";
 import Missions from "../../screens/Missions";
 import AddDrone from "../../screens/AddDrone";
 import RenameModal from "../Modals/RenameModal";
@@ -19,6 +18,7 @@ import Details from "../../screens/Details";
 import Observe from "../../screens/Observe";
 import MissionEditor from "../../screens/MissionEditor";
 import MissionDAO from "../../database/DAO/MissionDAO";
+import SocketModalProvider, {useModal} from "../SocketModalProvider";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -131,8 +131,8 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            <MenuProvider>
-                <ModalProvider>
+            <SocketModalProvider>
+                <MenuProvider>
                     <View style={{
                         position: 'absolute',
                         height: '100%',
@@ -151,8 +151,8 @@ const Navigation = () => {
                             />
                         ))}
                     </Stack.Navigator>
-                </ModalProvider>
-            </MenuProvider>
+                </MenuProvider>
+            </SocketModalProvider>
         </NavigationContainer>
     );
 };

@@ -160,4 +160,5 @@ const enhance = withObservables(["waypoint"], ({waypoint}) => ({
     waypoint: waypoint.observe(),
 }))
 
+export const UnEnhancedWaypointRow = WaypointRow;
 export default enhance(WaypointRow);

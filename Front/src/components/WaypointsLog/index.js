@@ -12,7 +12,7 @@ import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics
 import ScalableText from "../ScalableText";
 import DraggableFlatList from "react-native-draggable-flatlist/src/components/DraggableFlatList";
 import commands from "../../constants/commands";
-import WaypointRow from "./components/WaypointRow";
+import WaypointRow, {UnEnhancedWaypointRow} from "./components/WaypointRow";
 
 const CELL_HEIGHT = moderateScale(20)
 
@@ -63,8 +63,9 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex}) =>
 
     const handleWaypointDrag = async (data, from, to) => {
         onSelectedIndex(undefined);
-        await waypoints[from].changeOrder(to + 1);
-        await waypoints[to].changeOrder(from + 1);
+        for (let i = 0; i < data.length; i++) {
+            await data[i].changeOrder(i + 1);
+        }
         [...swipeableRefs.current.entries()].forEach(([key, ref]) => {
             if (ref) ref.close();
         });
@@ -126,19 +127,24 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex}) =>
                     onDragEnd={({data, from, to}) => handleWaypointDrag(data, from, to)}
                     keyExtractor={(item, index) => index}
                     activationDistance={20}
-                    renderItem={({item, drag, isActive, getIndex}) => <WaypointRow
-                        waypoint={item}
-                        waypoints={waypoints}
-                        index={getIndex()}
-                        drag={drag}
-                        swipeableRefs={swipeableRefs}
-                        isEditing={isEditing}
-                        styles={styles}
-                        isSelected={getIndex() === selectedIndex}
-                        onSelectedIndex={onSelectedIndex}
-                        onCommandChange={onCommandChange}
-                        onParamsEdit={onParamsEdit}
-                    />}
+                    renderItem={({item, drag, isActive, getIndex}) => {
+                        const RowComponent = isEditing ? WaypointRow : UnEnhancedWaypointRow;
+                        return (
+                            <RowComponent
+                                waypoint={item}
+                                waypoints={waypoints}
+                                index={getIndex()}
+                                drag={drag}
+                                swipeableRefs={swipeableRefs}
+                                isEditing={isEditing}
+                                styles={styles}
+                                isSelected={getIndex() === selectedIndex}
+                                onSelectedIndex={onSelectedIndex}
+                                onCommandChange={onCommandChange}
+                                onParamsEdit={onParamsEdit}
+                            />
+                        );
+                    }}
                     contentContainerStyle={{paddingBottom: CELL_HEIGHT}}
                 />
             </View>

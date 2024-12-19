@@ -1,8 +1,7 @@
 from functools import wraps
-from typing import Optional
 
 from flask import request, session
-from flask_socketio import emit
+from flask_socketio import emit, join_room, leave_room, rooms
 
 from Drone import ALLOWED_COMMANDS, Drone, create_command
 from . import bp
@@ -44,7 +43,7 @@ def connect_drone():
     except Exception as e:
         print(e)
         return {"message": "Some error occurred while connecting to drone. "
-                           "Check your connection string and try again later."}, 500
+                           "Check your connection string and try again later."}, 400
 
 
 @bp.route("/disconnect", methods=["POST"])
@@ -59,19 +58,37 @@ def disconnect():
     return {"message": f"Successfully disconnected."}, 200
 
 
-@socketio.on("stream_status")
-def start_stream(connection_string):
+@socketio.on("start_stream_status")
+def on_join(data):
+    room = data["room"]
+    connection_string = data["connection_string"]
+    join_room(room)
     session["is_active"] = True
-    try:
-        while session.get("is_active"):
+    while session.get("is_active") and room in rooms(request.sid):
+        try:
             drone = active_drones.get(connection_string)
             if not drone:
-                return {"message": "Cannot communicate with drone. Connect it first, using /connect route."}
+                emit(f"drone_status_{room}", {"status": None, "ip": connection_string, "success": False}, to=room)
+                continue
 
-            emit("drone_status", drone.get_status())
+            emit(f"drone_status_{room}", {
+                "status": drone.get_status(),
+                "ip": connection_string,
+                "success": True
+            }, to=room)
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
             socketio.sleep(1)
-    except Exception as e:
-        print(f"Error: {e}")
+    leave_room(room)
+    return {"message": "You have stopped listening.", "success": True}
+
+
+@socketio.on("stop_stream_status")
+def on_leave(data):
+    room = data["room"]
+    leave_room(room)
+    return {"message": "You have stopped listening.", "room": room, "success": True}
 
 
 @socketio.on("disconnect")
@@ -122,10 +139,10 @@ def return_to_launch(drone: Drone):
 @with_drone
 def goto(drone: Drone):
     lat = request.json["lat"]
-    lon = request.json["lat"]
-    alt = request.json["lat"]
-    airspeed = request.json.get("lat")
-    groundspeed = request.json.get("lat")
+    lon = request.json["lon"]
+    alt = request.json["alt"]
+    airspeed = request.json.get("airspeed")
+    groundspeed = request.json.get("groundspeed")
     try:
         drone.go_to(lat, lon, alt, airspeed, groundspeed)
         return {"message": "Command sent successfully."}, 200

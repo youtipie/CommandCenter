@@ -18,6 +18,7 @@
     "@react-navigation/native": "^7.0.13",
     "@react-navigation/stack": "^7.0.18",
     "@rnmapbox/maps": "^10.1.33",
+    "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "expo": "~52.0.15",
     "expo-constants": "^17.0.3",
@@ -27,6 +28,7 @@
     "expo-screen-orientation": "^8.0.0",
     "expo-splash-screen": "^0.29.13",
     "expo-status-bar": "~2.0.0",
+    "nanoid": "^5.0.9",
     "react": "18.3.1",
     "react-native": "0.76.3",
     "react-native-draggable-flatlist": "^4.0.1",
@@ -37,7 +39,8 @@
     "react-native-screens": "~4.1.0",
     "react-native-select-dropdown": "^4.0.1",
     "react-native-svg": "15.8.0",
-    "react-native-swipeable-item": "^2.0.9"
+    "react-native-swipeable-item": "^2.0.9",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -5,10 +5,13 @@ import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import {colors, dronePopUpIcons} from "../constants/styles";
 import {faArrowsToDot, faLayerGroup} from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modals/Modal";
-import {useModal} from "./Modals/ModalProvider";
+import {useModal} from "./SocketModalProvider";
+import axios from "axios";
+import {SERVER_URL} from "../services/socket";
+import ErrorModal from "./Modals/ErrorModal";
 
-const OverlayButtons = ({droneId, cameraRef, centerLocation, onStyleURLChange, styleURLs}) => {
-    const isEditing = !Boolean(droneId);
+const OverlayButtons = ({drone, cameraRef, centerLocation, onStyleURLChange, styleURLs}) => {
+    const isEditing = !Boolean(drone);
     const {openModal, closeModal} = useModal();
     const mapTypes = useRef(styleURLs);
 
@@ -19,8 +22,14 @@ const OverlayButtons = ({droneId, cameraRef, centerLocation, onStyleURLChange, s
                 content="Drone won't be able to continue its mission."
                 buttonText="Confirm"
                 buttonColor={colors.error300}
-                onPress={() => {
-                    console.log("RTL", droneId);
+                onPress={async () => {
+                    try {
+                        await axios.post(SERVER_URL + "/drone/rtl", {
+                            "connection_string": drone.uri
+                        });
+                    } catch (e) {
+                        openModal(() => <ErrorModal/>);
+                    }
                     closeModal();
                 }}
             />

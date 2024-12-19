@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from dronekit import Vehicle, LocationGlobalRelative, Command, CommandSequence, VehicleMode
+from dronekit import Vehicle, LocationGlobalRelative, Command, VehicleMode
 from pymavlink import mavutil
 
 from .utils import get_distance_metres, check_is_drone_command_allowed, create_command
@@ -54,28 +54,19 @@ class MissionControl:
     def __get_distance_to_next_waypoint(self) -> float:
         next_waypoint = self.vehicle.commands.next
         if next_waypoint == 0:
-            return None
+            return 0
         mission_item = self.vehicle.commands[next_waypoint - 1]
         lat = mission_item.x
         lon = mission_item.y
         alt = mission_item.z
 
-        is_exceptional_case = False
-        if mission_item.command == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH:
+        if mission_item.command == 20:
             lat = self.vehicle.home_location.lat
             lon = self.vehicle.home_location.lon
             alt = 0
-            is_exceptional_case = True
 
-        # TODO: SOME COMMANDS MAY HAVE 0, 0, 0 AS XYZ. HANDLE IT
-        # Temporary fix
-        if not is_exceptional_case:
-            if lat == 0:
-                lat = self.vehicle.location.global_relative_frame.lat
-            if lon == 0:
-                lon = self.vehicle.location.global_relative_frame.lon
-            if alt == 0:
-                alt = self.vehicle.location.global_relative_frame.alt
+        if mission_item.command in (22, 93, 177, 178, 203, 206, 211):
+            return 0
 
         targetWaypointLocation = LocationGlobalRelative(lat, lon, alt)
         distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, targetWaypointLocation)
@@ -90,5 +81,5 @@ class MissionControl:
             "current_waypoint": self.vehicle.commands.next,
             "waypoints": [{
                 **dict((name, getattr(command, name)) for name in command.fieldnames)
-            } for command in self.vehicle.commands]
+            } for command in self.vehicle.commands[:-1]]
         }
