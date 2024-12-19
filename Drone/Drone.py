@@ -47,11 +47,6 @@ class Drone:
         return self.__guided_control.return_to_launch(wait_for)
 
     @update_last_used
-    def go_to(self, lat: float, lon: float, alt: float, airspeed: Optional[float] = None,
-              groundspeed: Optional[float] = None, wait_for: bool = False) -> None:
-        return self.__guided_control.go_to(LocationGlobalRelative(lat, lon, alt), airspeed, groundspeed, wait_for)
-
-    @update_last_used
     def start_mission(self, commands: Iterable[Command]) -> str:
         self.take_off(3)
         return self.__mission_control.start_mission(commands)
@@ -98,7 +93,6 @@ class Drone:
             "groundspeed": self.vehicle.groundspeed,
             "link_quality": self.get_link_quality(),
             **self.__mission_control.get_mission_status(),
-            **self.__guided_control.get_guided_status()
         }
 
     def disconnect(self) -> None:

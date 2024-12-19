@@ -52,26 +52,3 @@ class GuidedControl:
         except Exception as e:
             print(e)
 
-    def go_to(self, location: LocationGlobalRelative, airspeed: Optional[float] = None,
-              groundspeed: Optional[float] = None, wait_for: bool = False) -> None:
-        self.__arm_if_not_armed()
-        self.__next_waypoint = location
-        self.vehicle.simple_goto(location, airspeed, groundspeed)
-        if wait_for:
-            while 5 < get_distance_metres(self.vehicle.location.global_relative_frame, location):
-                time.sleep(1)
-
-    def __get_distance_to_next_waypoint(self) -> float:
-        if not self.__next_waypoint:
-            return 0
-
-        distance_to_point = get_distance_metres(self.vehicle.location.global_relative_frame, self.__next_waypoint)
-        return distance_to_point
-
-    def get_guided_status(self) -> dict:
-        distance_to_next_waypoint = self.__get_distance_to_next_waypoint()
-        return {
-            "distance_to_guided_waypoint": distance_to_next_waypoint
-        } if distance_to_next_waypoint else {}
-
-    # TODO: Add another commands in guided mode control
