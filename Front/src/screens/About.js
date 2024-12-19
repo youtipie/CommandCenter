@@ -2,6 +2,8 @@ import {ScrollView, StyleSheet, Text, View} from "react-native";
 import {colors, commonIcons, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
+import {faBook, faCircle} from "@fortawesome/free-solid-svg-icons";
+import commands from "../constants/commands";
 
 const About = () => {
     return (
@@ -35,6 +37,38 @@ const About = () => {
                 <Text style={styles.text}>Returning home: If necessary, activate the drone's automatic return to the
                     starting point.</Text>
             </View>
+            <View style={styles.section}>
+                <View style={styles.titleWrapper}>
+                    <FontAwesomeIcon icon={faBook} color={colors.accent300} size={moderateScale(24)}/>
+                    <Text style={styles.title}>Commands overview</Text>
+                </View>
+                {Object.values(commands).map((command, index) => (
+                    <View key={index}>
+                        <Text style={styles.text}>{command.name}</Text>
+                        <Text style={styles.text}>{command.description}</Text>
+                        <View style={styles.bulletList}>
+                            {Object.entries(command).map(([key, value]) => {
+                                if (key.startsWith('param')) {
+                                    return (
+                                        <View key={key} style={styles.listItem}>
+                                            <FontAwesomeIcon
+                                                icon={faCircle}
+                                                style={[styles.text, styles.bulletPoint]}
+                                                color={colors.primaryText200}
+                                                size={moderateScale(10)}
+                                            />
+                                            <Text style={[styles.text, styles.smallText]}>
+                                                {`${value.name}: ${value.description}`}
+                                            </Text>
+                                        </View>
+                                    );
+                                }
+                                return null;
+                            })}
+                        </View>
+                    </View>
+                ))}
+            </View>
         </ScrollView>
     );
 };
@@ -63,5 +97,18 @@ const styles = StyleSheet.create({
         fontSize: moderateScale(20),
         fontFamily: fonts.primaryRegular,
         marginBottom: verticalScale(10),
+    },
+    smallText: {
+        fontSize: moderateScale(16),
+    },
+    bulletList: {
+        paddingLeft: horizontalScale(10),
+    },
+    bulletPoint: {
+        marginRight: horizontalScale(5),
+    },
+    listItem: {
+        flexDirection: "row",
+        alignItems: "center",
     }
 });
