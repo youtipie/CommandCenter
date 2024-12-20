@@ -92,7 +92,7 @@ def on_leave(data):
 
 
 @socketio.on("disconnect")
-def test_disconnect():
+def disconnect():
     session["is_active"] = False
     return {"message", "Successfully left session"}
 
@@ -128,23 +128,6 @@ def takeoff(drone: Drone):
 def return_to_launch(drone: Drone):
     try:
         drone.return_to_launch()
-        return {"message": "Command sent successfully."}, 200
-    except Exception as e:
-        print(e)
-        return {"message": "Some error occurred, try again later."}, 500
-
-
-@bp.route("/goto", methods=["POST"])
-@with_validation({"lat": float, "lon": float, "alt": float})
-@with_drone
-def goto(drone: Drone):
-    lat = request.json["lat"]
-    lon = request.json["lon"]
-    alt = request.json["alt"]
-    airspeed = request.json.get("airspeed")
-    groundspeed = request.json.get("groundspeed")
-    try:
-        drone.go_to(lat, lon, alt, airspeed, groundspeed)
         return {"message": "Command sent successfully."}, 200
     except Exception as e:
         print(e)

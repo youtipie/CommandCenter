@@ -250,3 +250,5 @@ ALLOWED_COMMANDS = {
         },
     },
 }
+
+ALLOWED_COMMANDS = {str(key): value for key, value in ALLOWED_COMMANDS.items()}

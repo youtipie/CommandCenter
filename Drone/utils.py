@@ -25,7 +25,7 @@ def get_distance_metres(location1: LocationGlobal, location2: LocationGlobal) ->
 
 
 def check_is_drone_command_allowed(command: Command) -> bool:
-    return command.command in ALLOWED_COMMANDS
+    return str(command.command) in ALLOWED_COMMANDS
 
 
 def create_command(command: int, param1: float = 0, param2: float = 0, param3: float = 0,

@@ -19,6 +19,12 @@ eventlet = "^0.38.0"
 flask-socketio = "^5.4.1"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-timeout = "^2.3.1"
+requests = "^2.32.3"
+websocket-client = "^1.8.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

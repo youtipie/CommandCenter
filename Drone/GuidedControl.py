@@ -44,10 +44,10 @@ class GuidedControl:
         try:
             self.vehicle.mode = VehicleMode("RTL")
             self.__next_waypoint = LocationGlobalRelative(
-                self.vehicle.home_location.lat, self.vehicle.home_location.lot, 0
+                self.vehicle.home_location.lat, self.vehicle.home_location.lon, 0
             )
             if wait_for:
-                while 1 < get_distance_metres(self.vehicle.location.global_frame, self.vehicle.home_location):
+                while 2 < get_distance_metres(self.vehicle.location.global_frame, self.vehicle.home_location):
                     time.sleep(1)
         except Exception as e:
             print(e)

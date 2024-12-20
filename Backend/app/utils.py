@@ -47,9 +47,7 @@ def validate_cmd_list(cmd_list) -> Tuple[bool, List[str]]:
         if "command" not in item:
             errors.append(f"Item at index {idx} is missing mandatory key 'command'.")
             continue
-        if not isinstance(item["command"], int):
-            errors.append(f"Item at index {idx} has 'command' that is not an integer: {item['command']}.")
-        if item["command"] not in ALLOWED_COMMANDS:
+        if str(item["command"]) not in ALLOWED_COMMANDS:
             errors.append(f"Item at index {idx} has command that is not allowed: {item['command']}.")
 
         for param in [f"param{i}" for i in range(1, 8)]:

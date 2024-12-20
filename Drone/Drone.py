@@ -1,7 +1,7 @@
 import time
-from typing import Optional, Iterable
+from typing import Iterable
 
-from dronekit import connect, LocationGlobalRelative, Command, LocationGlobal
+from dronekit import connect, Command, LocationGlobal
 
 from .GuidedControl import GuidedControl
 from .MissionControl import MissionControl
