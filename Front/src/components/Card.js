@@ -4,9 +4,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {moderateScale} from "../utils/metrics";
 import PopUpMenu from "./PopUpMenu";
 
-const Card = ({title, description, icon, color, onPress, popUpOptions}) => {
+const Card = ({title, description, icon, color, onPress, popUpOptions, testID = "Card"}) => {
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress}>
+        <TouchableOpacity testID={testID} style={styles.card} onPress={onPress}>
             <View style={styles.iconContainer}>
                 <FontAwesomeIcon icon={icon} color={color} size={moderateScale(64)}/>
             </View>

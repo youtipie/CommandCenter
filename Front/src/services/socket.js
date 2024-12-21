@@ -1,6 +1,6 @@
 import {io} from 'socket.io-client';
 
-export const SERVER_URL = 'http://192.168.0.163:5000';
+export const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const socket = io(SERVER_URL, {
     autoConnect: false,

@@ -1,8 +1,3 @@
-import * as dotenv from "dotenv";
-
-dotenv.config();
-
-
 export default {
     "expo": {
         "name": "CommandCenter",
@@ -44,9 +39,14 @@ export default {
                 "@rnmapbox/maps",
                 {
                     "RNMapboxMapsImpl": "mapbox",
-                    "RNMapboxMapsDownloadToken": process.env.MAPBOX_APIKEY
+                    "RNMapboxMapsDownloadToken": process.env.EXPO_PUBLIC_MAPBOX_APIKEY
                 }
-            ]
+            ],
+            ["expo-build-properties", {
+                "android": {
+                    "usesCleartextTraffic": true
+                }
+            }]
         ],
         "extra": {
             "eas": {

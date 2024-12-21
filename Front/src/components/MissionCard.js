@@ -24,6 +24,7 @@ const MissionCard = ({mission, waypointsCount}) => {
 
     return (
         <Card
+            testID={"MissionCard"}
             title={mission.title}
             description={`${waypointsCount} waypoints, ${distance} km`}
             icon={missionStyle.icon}

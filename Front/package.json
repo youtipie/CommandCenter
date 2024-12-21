@@ -21,6 +21,7 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "expo": "~52.0.15",
+    "expo-build-properties": "~0.13.1",
     "expo-constants": "^17.0.3",
     "expo-dev-client": "^5.0.5",
     "expo-font": "^13.0.1",

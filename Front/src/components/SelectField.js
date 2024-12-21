@@ -8,6 +8,7 @@ const SelectField = ({onSelect, options, wrapperStyle}) => {
 
     return (
         <SelectDropdown
+            testID="SelectField"
             data={options}
             onSelect={onSelect}
             renderButton={(selectedItem) => (

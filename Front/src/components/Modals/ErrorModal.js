@@ -7,6 +7,7 @@ const ErrorModal = ({text}) => {
 
     return (
         <Modal
+            testID="ErrorModal"
             title="Some error occured"
             buttonColor={colors.accent400}
             buttonText="Ok"

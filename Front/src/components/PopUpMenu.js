@@ -15,7 +15,7 @@ const PopUpMenu = ({children, textStyle, customBody, options = [], renderer = re
             <MenuOptions optionsContainerStyle={styles.optionsContainerStyle}>
                 {options.map((option, index) => (
                     <MenuOption onSelect={option.onSelect} key={index}>
-                        <View style={styles.optionWrapper}>
+                        <View testID={option.label} style={styles.optionWrapper}>
                             <View style={styles.iconWrapper}>
                                 <FontAwesomeIcon
                                     icon={option.icon}

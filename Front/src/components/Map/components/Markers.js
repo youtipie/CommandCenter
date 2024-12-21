@@ -17,6 +17,7 @@ const Markers = ({
         <>
             {waypointsWithCoordinates.map((waypoint, index) => (
                 <MapboxGL.PointAnnotation
+                    testID={`Marker-${index}`}
                     id={`${index}-annotation`}
                     key={`${index}-${selectedWaypoint}`}
                     coordinate={[waypoint.y, waypoint.x]}

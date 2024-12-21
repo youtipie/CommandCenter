@@ -2,9 +2,10 @@ import {Text} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {moderateScale} from "../utils/metrics";
 
-const ScalableText = ({style, children}) => {
+const ScalableText = ({style, children, testID = "ScalableText"}) => {
     return (
         <Text
+            testID={testID}
             adjustsFontSizeToFit={true}
             numberOfLines={1}
             style={[{

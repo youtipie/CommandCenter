@@ -60,6 +60,7 @@ const PreflightCheckModal = ({drone, droneData, onStartMission}) => {
         if (!canProceed) {
             openModal(() => (
                 <Modal
+                    testID="ConfirmModal"
                     title="Confirm action"
                     content="Some of the indicators have not been checked! It is not recommended to start the flight!"
                     buttonColor={colors.error300}
@@ -80,6 +81,7 @@ const PreflightCheckModal = ({drone, droneData, onStartMission}) => {
     return (
         droneData &&
         <Modal
+            testID='PreflightCheckModal'
             title="Preflight Check"
             buttonColor={colors.accent400}
             buttonText="Confirm"

@@ -49,6 +49,7 @@ const Details = ({drone, missions, history, historyLength, navigation}) => {
                     options={dronePopUpOptions(drone, droneData, openModal, closeModal, navigation)}
                 >
                     <FontAwesomeIcon
+                        testID="OptionsButton"
                         icon={commonIcons.dotsVertical}
                         size={moderateScale(20)}
                         color={tintColor}
@@ -115,6 +116,7 @@ const Details = ({drone, missions, history, historyLength, navigation}) => {
                 <>
                     <Section title="Current Position">
                         <MapboxGL.MapView
+                            testID="MapView"
                             zoomEnabled={false}
                             scrollEnabled={false}
                             logoEnabled={false}
@@ -131,7 +133,7 @@ const Details = ({drone, missions, history, historyLength, navigation}) => {
                                 animationDuration={0}
                             />
                             <MapboxGL.MarkerView coordinate={[droneData.location.lon, droneData.location.lat]}>
-                                <Image source={droneImg}
+                                <Image testID="DroneMarker" source={droneImg}
                                        style={{
                                            width: moderateScale(70),
                                            height: moderateScale(70),
@@ -139,15 +141,18 @@ const Details = ({drone, missions, history, historyLength, navigation}) => {
                                        }}/>
                             </MapboxGL.MarkerView>
                         </MapboxGL.MapView>
-                        <SectionText>Latitude: {droneData.location.lat.toFixed(6)};</SectionText>
-                        <SectionText>Longitude: {droneData.location.lon.toFixed(6)};</SectionText>
-                        <SectionText>Altitude: {droneData.location.relative_alt.toFixed(2)} m;</SectionText>
-                        <SectionText>Ground Speed: {droneData.groundspeed.toFixed(2)} m/s;</SectionText>
-                        <SectionText>Air Speed: {droneData.vertical_speed.toFixed(2)} m/s;</SectionText>
-                        <SectionText>Distance to RTL: {droneData.dist_to_home.toFixed(2)} m;</SectionText>
+                        <SectionText testID="Latitude">Latitude: {droneData.location.lat.toFixed(6)};</SectionText>
+                        <SectionText testID="Longtitude">Longitude: {droneData.location.lon.toFixed(6)};</SectionText>
+                        <SectionText
+                            testID="Altitude">Altitude: {droneData.location.relative_alt.toFixed(2)} m;</SectionText>
+                        <SectionText testID="GroundSpeed">Ground
+                            Speed: {droneData.groundspeed.toFixed(2)} m/s;</SectionText>
+                        <SectionText testID="Speed">Air Speed: {droneData.vertical_speed.toFixed(2)} m/s;</SectionText>
+                        <SectionText testID="DistanceToRTL">Distance to
+                            RTL: {droneData.dist_to_home.toFixed(2)} m;</SectionText>
                     </Section>
                     <Section title="Properties">
-                        <SectionText>Name: {drone.title};</SectionText>
+                        <SectionText testID="DroneName">Name: {drone.title};</SectionText>
                         <SectionText>Status: {status};</SectionText>
                         {status === statuses["1"].description && lastMission &&
                             <SectionText>Mission: {lastMission.title};</SectionText>}

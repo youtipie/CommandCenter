@@ -86,7 +86,7 @@ const WaypointsLog = ({waypoints, isEditing, selectedIndex, onSelectedIndex}) =>
     }
 
     return (
-        <Animated.View style={[styles.menu, {height: MENU_HEIGHT}, animatedStyle]}>
+        <Animated.View testID="WaypointsLog" style={[styles.menu, {height: MENU_HEIGHT}, animatedStyle]}>
             <PanGestureHandler onGestureEvent={gestureHandler}>
                 <Animated.View style={styles.row}>
                     <View style={[styles.cell, styles.cellSmall]}>

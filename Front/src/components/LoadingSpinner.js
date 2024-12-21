@@ -18,7 +18,7 @@ const LoadingSpinner = ({label, progressText, onDiscard}) => {
     }, [onDiscard]);
 
     return (
-        <View style={styles.spinnerContainer}>
+        <View testID="LoadingSpinner" style={styles.spinnerContainer}>
             <View style={styles.spinnerWrapper}>
                 <ActivityIndicator
                     size="large"

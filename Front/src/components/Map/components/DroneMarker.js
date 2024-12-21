@@ -35,6 +35,7 @@ const DroneMarker = ({droneData, waypointsWithCoordinates}) => {
                 </MapboxGL.ShapeSource>
             }
             <MapboxGL.MarkerView
+                testID="DroneMarker"
                 coordinate={[droneData.location.lon, droneData.location.lat]}
                 allowOverlap
             >
@@ -46,6 +47,7 @@ const DroneMarker = ({droneData, waypointsWithCoordinates}) => {
                        }}/>
             </MapboxGL.MarkerView>
             <MapboxGL.MarkerView
+                testID="HomeMarker"
                 coordinate={[droneData.home_location.log, droneData.home_location.lat]}
                 allowOverlap
             >

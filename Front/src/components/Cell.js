@@ -2,7 +2,7 @@ import ScalableText from "./ScalableText";
 import {TextInput, View} from "react-native";
 import {colors} from "../constants/styles";
 
-const Cell = ({isEditing, onChange, style, children}) => {
+const Cell = ({isEditing, onChange, style, children, testID = "TableCell"}) => {
 
     const handleValueChange = (value) => {
         const decimalRegex = /^-?\d*\.?\d*$/;
@@ -20,6 +20,7 @@ const Cell = ({isEditing, onChange, style, children}) => {
         isEditing ?
             <View>
                 <TextInput
+                    testID={testID}
                     style={style}
                     defaultValue={children.toString()}
                     onChangeText={handleValueChange}
@@ -31,7 +32,7 @@ const Cell = ({isEditing, onChange, style, children}) => {
                 />
             </View>
             :
-            <ScalableText style={style}>{children}</ScalableText>
+            <ScalableText testID={testID} style={style}>{children}</ScalableText>
     );
 };
 

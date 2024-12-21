@@ -4,7 +4,8 @@ import {colors, fonts} from "../constants/styles";
 
 const ActionButton = ({color, text, wrapperStyle, onPress}) => {
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.button, {backgroundColor: color}, wrapperStyle]}>
+        <TouchableOpacity testID="ModalButton" onPress={onPress}
+                          style={[styles.button, {backgroundColor: color}, wrapperStyle]}>
             <Text style={styles.text}>
                 {text}
             </Text>

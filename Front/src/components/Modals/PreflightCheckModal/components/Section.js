@@ -10,7 +10,7 @@ const Section = ({label, expected, actual, sign}) => {
     }
 
     return (
-        <View style={[styles.container, {borderColor: borderColor}]}>
+        <View testID="PreflightCheckParam" style={[styles.container, {borderColor: borderColor}]}>
             <Text style={styles.text}>{label}</Text>
             {actual && expected &&
                 <Text style={styles.text}>{actual}{sign}>={expected}{sign}</Text>

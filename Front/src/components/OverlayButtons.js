@@ -18,6 +18,7 @@ const OverlayButtons = ({drone, cameraRef, centerLocation, onStyleURLChange, sty
     const RTL = () => {
         openModal(() => (
             <Modal
+                testID="RTLModal"
                 title="Confirm action"
                 content="Drone won't be able to continue its mission."
                 buttonText="Confirm"
@@ -52,7 +53,7 @@ const OverlayButtons = ({drone, cameraRef, centerLocation, onStyleURLChange, sty
     return (
         <View style={styles.container}>
             {!isEditing && (
-                <TouchableOpacity style={styles.buttonContainer} onPress={RTL}>
+                <TouchableOpacity testID="RTLButton" style={styles.buttonContainer} onPress={RTL}>
                     <FontAwesomeIcon
                         icon={dronePopUpIcons.RTL}
                         color={colors.primaryText100}
@@ -60,14 +61,14 @@ const OverlayButtons = ({drone, cameraRef, centerLocation, onStyleURLChange, sty
                     />
                 </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.buttonContainer} onPress={centerOnLocation}>
+            <TouchableOpacity testID="CenterButton" style={styles.buttonContainer} onPress={centerOnLocation}>
                 <FontAwesomeIcon
                     icon={faArrowsToDot}
                     color={colors.primaryText100}
                     size={moderateScale(21)}
                 />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer} onPress={changeMapLayer}>
+            <TouchableOpacity testID="ChangeLayerButton" style={styles.buttonContainer} onPress={changeMapLayer}>
                 <FontAwesomeIcon
                     icon={faLayerGroup}
                     color={colors.primaryText100}

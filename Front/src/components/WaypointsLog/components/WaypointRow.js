@@ -49,6 +49,7 @@ const WaypointRow = ({
                     justifyContent: "center",
                 }}>
                     <TouchableOpacity
+                        testID={`DeleteWP-${index}`}
                         style={styles.deleteWP}
                         onPress={async () => {
                             onSelectedIndex(undefined);
@@ -64,6 +65,7 @@ const WaypointRow = ({
             )}
         >
             <Pressable
+                testID={`TableRow-${index}`}
                 style={[styles.row, isSelected && styles.selectedRow]}
                 onPress={() => onSelectedIndex(index)}
                 onLongPress={(event) => isEditing ? drag(event) : onSelectedIndex(index)}
@@ -72,7 +74,7 @@ const WaypointRow = ({
                     <ScalableText style={styles.text}>{index + 1}</ScalableText>
                 </View>
                 <View style={[styles.cell, styles.cellMedium]}>
-                    <View style={styles.selectWrapper}>
+                    <View testID={`CommandSelect-${index}`} style={styles.selectWrapper}>
                         <SelectList
                             disabled={!isEditing}
                             textStyle={styles.text}
@@ -88,6 +90,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Param1-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "param1", value)}
                         style={styles.text}
@@ -97,6 +100,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Param2-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "param2", value)}
                         style={styles.text}
@@ -106,6 +110,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Param3-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "param3", value)}
                         style={styles.text}
@@ -115,6 +120,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Param4-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "param4", value)}
                         style={styles.text}
@@ -124,6 +130,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`X-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "x", value)}
                         style={styles.text}
@@ -133,6 +140,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Y-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "y", value)}
                         style={styles.text}
@@ -142,6 +150,7 @@ const WaypointRow = ({
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
                     <Cell
+                        testID={`Z-${index}`}
                         isEditing={isEditing}
                         onChange={(value) => onParamsEdit(waypoint, "z", value)} style={styles.text}
                     >
@@ -149,7 +158,7 @@ const WaypointRow = ({
                     </Cell>
                 </View>
                 <View style={[styles.cell, styles.cellExpand]}>
-                    <ScalableText style={styles.text}>{dist}</ScalableText>
+                    <ScalableText testID={`Dist-${index}`} style={styles.text}>{dist}</ScalableText>
                 </View>
             </Pressable>
         </SwipeableItem>

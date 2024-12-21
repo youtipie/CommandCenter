@@ -122,6 +122,7 @@ export const Map = ({
         <View style={styles.root}>
             <View style={styles.map}>
                 <MapboxGL.MapView
+                    testID="MapView"
                     ref={mapRef}
                     styleURL={styleURL}
                     style={styles.map}

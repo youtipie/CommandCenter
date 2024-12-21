@@ -3,7 +3,7 @@ import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import {colors, fonts} from "../constants/styles";
 import {useState} from "react";
 
-const InputWithErrors = ({label, error, onChangeValue}) => {
+const InputWithErrors = ({label, error, onChangeValue, testID = "InputField"}) => {
     const [text, setText] = useState("");
 
     const handleValueChange = (text) => {
@@ -18,6 +18,7 @@ const InputWithErrors = ({label, error, onChangeValue}) => {
                 <Text style={styles.label}>{label}</Text>
                 <View style={styles.inputWrapper}>
                     <TextInput
+                        testID={testID}
                         style={styles.input}
                         onChangeText={handleValueChange}
                         value={text}

@@ -4,9 +4,11 @@ import {colors, commonIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import ActionButton from "../ActionButton";
 
-const Modal = ({title, content, buttonStyle, buttonColor, buttonText, onPress}) => {
+const Modal = ({title, content, buttonStyle, buttonColor, buttonText, onPress, testID="Modal"}) => {
     return (
-        <TouchableWithoutFeedback onPress={() => null}>
+        <TouchableWithoutFeedback
+            testID={testID}
+            onPress={() => null}>
             <View style={styles.modal}>
                 <View style={styles.header}>
                     <FontAwesomeIcon

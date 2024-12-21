@@ -2,9 +2,9 @@ import {Text, StyleSheet} from "react-native";
 import {moderateScale} from "../../../utils/metrics";
 import {colors, fonts} from "../../../constants/styles";
 
-const SectionText = ({children}) => {
+const SectionText = ({children, testID}) => {
     return (
-        <Text style={styles.text}>{children}</Text>
+        <Text testID={testID ?? children.toString()} style={styles.text}>{children}</Text>
     );
 };
 

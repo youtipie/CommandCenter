@@ -29,9 +29,10 @@ const RenameModal = ({onRename}) => {
             content={
                 <View style={styles.container}>
                     {error &&
-                        <Text style={styles.error}>{error}</Text>
+                        <Text testID="RenameError" style={styles.error}>{error}</Text>
                     }
                     <TextInput
+                        testID="RenameField"
                         style={styles.input}
                         onChangeText={setText}
                         value={text}

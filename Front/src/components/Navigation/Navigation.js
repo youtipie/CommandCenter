@@ -31,7 +31,7 @@ const DrawerNavigation = () => {
         {
             name: 'Drones', title: "My Drones", options: {
                 headerRight: ({tintColor}) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("AddDrone")}>
+                    <TouchableOpacity testID="AddDroneNavButton" onPress={() => navigation.navigate("AddDrone")}>
                         <FontAwesomeIcon
                             icon={commonIcons.addCircle}
                             color={tintColor}
@@ -47,7 +47,7 @@ const DrawerNavigation = () => {
         {
             name: 'Missions', title: "My Missions", options: {
                 headerRight: ({tintColor}) => (
-                    <TouchableOpacity onPress={() => (
+                    <TouchableOpacity testID="AddMissionNavButton" onPress={() => (
                         openModal(() => (
                             <RenameModal
                                 onRename={(text) => (

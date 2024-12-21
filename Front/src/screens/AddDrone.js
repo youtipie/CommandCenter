@@ -100,22 +100,25 @@ const AddDrone = () => {
             /> Make sure your drone has internet access so that the app can connect to your drone. The connection is
                 made using the UDP protocol, so make sure your drone supports this connection.</Text>
             <InputWithErrors
+                testID="NameField"
                 label="Name"
                 error={errors.name}
                 onChangeValue={(value) => handleFormChange("name", value)}
 
             />
             <InputWithErrors
+                testID="IpField"
                 label="IP Adress"
                 error={errors.ip}
                 onChangeValue={(value) => handleFormChange("ip", value)}
             />
             <InputWithErrors
+                testID="PortField"
                 label="Port"
                 error={errors.port}
                 onChangeValue={(value) => handleFormChange("port", value)}
             />
-            <TouchableOpacity style={styles.button} onPress={handleAddButton}>
+            <TouchableOpacity testID="AddButton" style={styles.button} onPress={handleAddButton}>
                 <Text style={[styles.text, styles.buttonText]}>Add Drone</Text>
             </TouchableOpacity>
         </ScrollView>

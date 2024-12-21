@@ -26,6 +26,7 @@ const RenderDroneCard = ({item}) => {
 
     return (
         <Card
+            testID={`DroneCard`}
             key={droneData?.system_status}
             title={item.title}
             description={`Status: ${status.description}`}

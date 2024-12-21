@@ -14,7 +14,7 @@ const SelectList = ({disabled, options, onSelect, textStyle, children}) => {
                     <ScrollView style={{maxHeight: verticalScale(200)}}>
                         {options.map((item, index) => (
                             <MenuOption onSelect={() => onSelect(item.value)} key={item.value}>
-                                <Text style={textStyle}>{item.label}</Text>
+                                <Text testID={`Option-${item.value}`} style={textStyle}>{item.label}</Text>
                             </MenuOption>
                         ))}
                     </ScrollView>
